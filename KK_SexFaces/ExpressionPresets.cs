@@ -4,7 +4,9 @@ namespace KK_SexFaces
 {
     public class ExpressionPresets
     {
-        public static Dictionary<string, Dictionary<int, float>> eyeExpressions = new Dictionary<string, Dictionary<int, float>> {
+        public static Dictionary<string, Dictionary<int, float>> eyebrowExpressions =
+            new Dictionary<string, Dictionary<int, float>>
+        {
             {
                 "Default",
                 new Dictionary<int, float>
@@ -12,6 +14,57 @@ namespace KK_SexFaces
                     // key: pattern number (0: default, 1: both closed etc.)
                     // value: pattern weight (0 to 1)
                     // sum of weights must not be greater than 1
+                    { 0, 1 }
+                }
+            },
+            {
+                "Amused L",
+                new Dictionary<int, float>
+                {
+                    { 2, .5f },
+                    { 15, .5f }
+                }
+            },
+            {
+                "Amused R",
+                new Dictionary<int, float>
+                {
+                    { 2, .5f },
+                    { 16, .5f }
+                }
+            },
+            {
+                "Troubled",
+                new Dictionary<int, float>
+                {
+                    { 1, .5f },
+                    { 2, .5f }
+                }
+            },
+            {
+                "Sassy L",
+                new Dictionary<int, float>
+                {
+                    { 15, .4f },
+                    { 4, .6f }
+                }
+            },
+            {
+                "Sassy R",
+                new Dictionary<int, float>
+                {
+                    { 16, .4f },
+                    { 4, .6f }
+                }
+            }
+        };
+
+        public static Dictionary<string, Dictionary<int, float>> eyeExpressions =
+            new Dictionary<string, Dictionary<int, float>> {
+            {
+                "Default",
+                new Dictionary<int, float>
+                {
                     { 0, 1 }
                 }
             },
@@ -80,7 +133,8 @@ namespace KK_SexFaces
             },
         };
 
-        public static Dictionary<string, Dictionary<int, float>> mouthExpressions = new Dictionary<string, Dictionary<int, float>> {
+        public static Dictionary<string, Dictionary<int, float>> mouthExpressions =
+            new Dictionary<string, Dictionary<int, float>> {
             {
                 "Default",
                 new Dictionary<int, float>
@@ -150,6 +204,22 @@ namespace KK_SexFaces
                 {
                     { 19, .7f},
                     { 39, .3f},
+                }
+            },
+            {
+                "Wide Cat Mouth 1",
+                new Dictionary<int, float>
+                {
+                    { 39, .5f},
+                    { 37, .5f},
+                }
+            },
+            {
+                "Wide Cat Mouth 2",
+                new Dictionary<int, float>
+                {
+                    { 11, .5f},
+                    { 37, .5f},
                 }
             }
         };

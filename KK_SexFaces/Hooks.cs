@@ -4,7 +4,7 @@ using KKAPI.Studio;
 
 namespace KK_SexFaces
 {
-    internal static partial class Hooks
+    internal static class Hooks
     {
         public static void InstallHooks()
         {

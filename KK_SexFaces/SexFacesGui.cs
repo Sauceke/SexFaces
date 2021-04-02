@@ -45,19 +45,29 @@ namespace KK_SexFaces
                     SexFacesController.TRIGGERS[trigger.Value],
                     (SaveData.Heroine.HExperienceKind)experience.Value));
             e.AddControl(new MakerSeparator(cat, plugin));
-            e.AddControl(new MakerText("Extras", cat, plugin));
+            e.AddControl(new MakerText("Extra Expression Controls", cat, plugin));
+            e.AddControl(new MakerDropdown("Extra Eyebrow Expressions",
+                GetDictKeys(ExpressionPresets.eyebrowExpressions), cat, 0, plugin))
+                .ValueChanged.Subscribe(GetController().ApplyEyebrowPreset);
             e.AddControl(new MakerDropdown("Extra Eye Expressions",
                 GetDictKeys(ExpressionPresets.eyeExpressions), cat, 0, plugin))
                 .ValueChanged.Subscribe(GetController().ApplyEyePreset);
             e.AddControl(new MakerDropdown("Extra Mouth Expressions",
                 GetDictKeys(ExpressionPresets.mouthExpressions), cat, 0, plugin))
                 .ValueChanged.Subscribe(GetController().ApplyMouthPreset);
-            e.AddControl(new MakerSlider(cat, "Eye Asymmetry", 0, 1, .5f, plugin))
+            e.AddControl(new MakerSlider(cat, "Eyebrow Limit", 0, 1, 1, plugin))
+                .ValueChanged.Subscribe(GetController().ChaControl.ChangeEyebrowOpenMax);
+            e.AddControl(new MakerText(
+                "Sets how much the eyebrows are allowed to move\n" +
+                "when the character blinks.",
+                cat, plugin))
+                .TextColor = new Color(0.7f, 0.7f, 0.7f); ;
+            e.AddControl(new MakerSlider(cat, "o_O Scale", 0, 1, .5f, plugin))
                 .ValueChanged.Subscribe(GetController().Squint);
             e.AddControl(new MakerText(
-                "Eye Asymmetry works only with eye expressions\n" +
-                "from the Operation Panel. It doesn't work with\n" +
-                "Extra Eye Expressions.",
+                "Makes one eye wider than the other.\n" +
+                "For basic eye expressions only (the ones listed\n" +
+                "in the Operation Panel).",
                 cat, plugin))
                 .TextColor = new Color(0.7f, 0.7f, 0.7f);
         }
