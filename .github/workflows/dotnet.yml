@@ -11,6 +11,9 @@ jobs:
 
     runs-on: windows-2019
     
+    env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+    
     steps:
     - uses: actions/checkout@v1
       name: Checkout Code
@@ -30,5 +33,9 @@ jobs:
     - name: Upload Artifact
       uses: actions/upload-artifact@v1.0.0
       with:
-        name: published_webapp
+        name: Published artifacts
         path: bin\Release\Publish
+
+
+
+
