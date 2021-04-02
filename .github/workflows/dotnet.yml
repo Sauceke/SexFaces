@@ -34,7 +34,7 @@ jobs:
       uses: actions/upload-artifact@v1.0.0
       with:
         name: Published artifacts
-        path: bin\Release\Publish
+        path: bin\BepInEx\plugins
 
 
 
