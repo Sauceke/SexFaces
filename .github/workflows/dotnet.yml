@@ -14,7 +14,10 @@ jobs:
     steps:
     - uses: actions/checkout@v1
       name: Checkout Code
-       
+    
+    - name: Setup MSBuild Path
+      uses: warrenbuckley/Setup-MSBuild@v1
+      
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v1.0.2
      
@@ -22,7 +25,7 @@ jobs:
       run: nuget restore KK_SexFaces.sln
  
     - name: Build and Publish
-      run: start "" "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe" KK_SexFaces.sln /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile
+      run: msbuild KK_SexFaces.sln /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile
  
     - name: Upload Artifact
       uses: actions/upload-artifact@v1.0.0
