@@ -38,6 +38,6 @@ jobs:
         prerelease: false
         automatic_release_tag: ${{ github.event.inputs.version }}
         files: |
-          bin\BepInEx\plugins\KK_SexFaces.dll
+          **/*.dll
 
 
