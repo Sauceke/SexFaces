@@ -1,9 +1,11 @@
-name: release
+name: Manual release
 
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version'
+        required: true
 
 jobs:
   release:
@@ -34,8 +36,8 @@ jobs:
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         prerelease: false
+        automatic_release_tag: ${{ github.event.inputs.version }}
         files: |
           bin\BepInEx\plugins\KK_SexFaces.dll
-
 
 
