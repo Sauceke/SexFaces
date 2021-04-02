@@ -9,7 +9,7 @@ namespace KK_SexFaces
 {
     public class FacialExpression
     {
-        public int EyebrowPattern { get; set; }
+        public string EyebrowExpression { get; set; }
         public float EyebrowOpenMax { get; set; }
         public string EyeExpression { get; set; }
         public float EyesOpenMax { get; set; }
@@ -45,7 +45,7 @@ namespace KK_SexFaces
         {
             var expression = new FacialExpression()
             {
-                EyebrowPattern = chaControl.GetEyebrowPtn(),
+                EyebrowExpression = DictToString(GetExpression(chaControl.eyebrowCtrl)),
                 EyebrowOpenMax = chaControl.GetEyebrowOpenMax(),
                 EyeExpression = DictToString(GetExpression(chaControl.eyesCtrl)),
                 EyesOpenMax = chaControl.GetEyesOpenMax(),
@@ -64,7 +64,7 @@ namespace KK_SexFaces
 
         public void Apply(ChaControl chaControl)
         {
-            chaControl.ChangeEyebrowPtn(EyebrowPattern, true);
+            chaControl.eyebrowCtrl.ChangeFace(StringToDict(EyebrowExpression), true);
             chaControl.ChangeEyebrowOpenMax(EyebrowOpenMax);
             chaControl.eyesCtrl.ChangeFace(StringToDict(EyeExpression), true);
             chaControl.ChangeEyesOpenMax(EyesOpenMax);
