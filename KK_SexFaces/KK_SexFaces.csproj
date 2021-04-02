@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{ba2bf218-cc71-49fc-977a-abb64fb726f6}</ProjectGuid>
+    <ProjectGuid>{BA2BF218-CC71-49FC-977A-ABB64FB726F6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>KK_SexFaces</RootNamespace>

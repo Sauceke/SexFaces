@@ -1,5 +1,7 @@
 ﻿using KKAPI.Maker;
 using KKAPI.Maker.UI;
+using System.Collections;
+using UniRx;
 using UnityEngine;
 
 namespace KK_SexFaces
@@ -42,11 +44,34 @@ namespace KK_SexFaces
                 .OnClick.AddListener(() => GetController().PreviewSexFace(
                     SexFacesController.TRIGGERS[trigger.Value],
                     (SaveData.Heroine.HExperienceKind)experience.Value));
+            e.AddControl(new MakerSeparator(cat, plugin));
+            e.AddControl(new MakerText("Extras", cat, plugin));
+            e.AddControl(new MakerDropdown("Extra Eye Expressions",
+                GetDictKeys(ExpressionPresets.eyeExpressions), cat, 0, plugin))
+                .ValueChanged.Subscribe(GetController().ApplyEyePreset);
+            e.AddControl(new MakerDropdown("Extra Mouth Expressions",
+                GetDictKeys(ExpressionPresets.mouthExpressions), cat, 0, plugin))
+                .ValueChanged.Subscribe(GetController().ApplyMouthPreset);
+            e.AddControl(new MakerSlider(cat, "Eye Asymmetry", 0, 1, .5f, plugin))
+                .ValueChanged.Subscribe(GetController().Squint);
+            e.AddControl(new MakerText(
+                "Eye Asymmetry works only with eye expressions\n" +
+                "from the Operation Panel. It doesn't work with\n" +
+                "Extra Eye Expressions.",
+                cat, plugin))
+                .TextColor = new Color(0.7f, 0.7f, 0.7f);
         }
 
         private static SexFacesController GetController()
         {
             return MakerAPI.GetCharacterControl().gameObject.GetComponent<SexFacesController>();
+        }
+
+        private static string[] GetDictKeys(IDictionary dict)
+        {
+            string[] keys = new string[dict.Keys.Count];
+            dict.Keys.CopyTo(keys, 0);
+            return keys;
         }
     }
 }

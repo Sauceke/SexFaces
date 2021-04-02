@@ -68,6 +68,31 @@ namespace KK_SexFaces
                 }
             }
         }
+        
+        internal void Squint(float squintingFactor)
+        {
+            // The "correct" formula would be to multiply this by 2, but the upper 50% isn't that
+            // interesting anyway (it's basically a wink at that point)
+            var winkWeight = Math.Abs(squintingFactor - .5f);
+            var newExpression = new Dictionary<int, float>
+                {
+                    // 5 = left wink
+                    // 6 = right wink
+                    { squintingFactor < .5f ? 5 : 6,  winkWeight},
+                    { ChaControl.GetEyesPtn(), 1 - winkWeight}
+                };
+            ChaControl.eyesCtrl.ChangeFace(newExpression, true);
+        }
+
+        internal void ApplyEyePreset(int index)
+        {
+            ChaControl.eyesCtrl.ChangeFace(ExpressionPresets.eyeExpressions.Values.ElementAt(index), true);
+        }
+
+        internal void ApplyMouthPreset(int index)
+        {
+            ChaControl.mouthCtrl.ChangeFace(ExpressionPresets.mouthExpressions.Values.ElementAt(index), true);
+        }
 
         internal void RegisterCurrent(string trigger, SaveData.Heroine.HExperienceKind experience)
         {
