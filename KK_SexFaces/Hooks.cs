@@ -6,6 +6,7 @@ namespace KK_SexFaces
 {
     internal static class Hooks
     {
+
         public static void InstallHooks()
         {
             if (!StudioAPI.InsideStudio)

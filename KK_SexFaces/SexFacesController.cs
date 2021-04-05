@@ -6,6 +6,7 @@ using KKAPI.Maker;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Timers;
 
 namespace KK_SexFaces
 {
@@ -13,6 +14,8 @@ namespace KK_SexFaces
     {
         public static readonly string[] TRIGGERS =
             { nameof(OnForeplay), nameof(OnInsert), nameof(OnOrgasm) };
+
+        private const int ORG_COOLDOWN_MILLIS = 10 * 1000;
 
         public Dictionary<string, FacialExpression> SexFaces { get; } =
             new Dictionary<string, FacialExpression>();
@@ -30,6 +33,10 @@ namespace KK_SexFaces
         internal void OnOrgasm(SaveData.Heroine.HExperienceKind experience)
         {
             ApplySexFace(GetSexFaceId(nameof(OnOrgasm), experience));
+            var timer = new Timer(ORG_COOLDOWN_MILLIS);
+            timer.Elapsed += (_source, _e) => OnForeplay(experience);
+            timer.AutoReset = false;
+            timer.Enabled = true;
         }
 
         protected override void OnCardBeingSaved(GameMode currentGameMode)
