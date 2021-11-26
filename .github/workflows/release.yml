@@ -53,5 +53,5 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./KK_SexFaces.zip
-        asset_name: KK_SexFaces_v{{ github.event.inputs.version }}.zip
+        asset_name: KK_SexFaces_v${{ github.event.inputs.version }}.zip
         asset_content_type: application/zip
