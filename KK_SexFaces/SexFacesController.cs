@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
+using UnityEngine;
 
 namespace KK_SexFaces
 {
@@ -19,6 +20,13 @@ namespace KK_SexFaces
 
         public Dictionary<string, FacialExpression> SexFaces { get; } =
             new Dictionary<string, FacialExpression>();
+
+        protected override void OnReload(GameMode currentGameMode)
+        {
+            PatchPatternForAhegao(2);
+            PatchPatternForAhegao(11);
+            PatchPatternForAhegao(22);
+        }
 
         internal void OnForeplay(SaveData.Heroine.HExperienceKind experience)
         {
@@ -154,6 +162,32 @@ namespace KK_SexFaces
             SaveData.Heroine.HExperienceKind experience)
         {
             return "sexFace(" + trigger + "," + (int)experience + ")";
+        }
+
+        private void PatchPatternForAhegao(int ptnIndex)
+        {
+            var mouthCtrl = ChaControl.mouthCtrl;
+            for (int fbsIndex = 0; fbsIndex < mouthCtrl.FBSTarget.Length; fbsIndex++)
+            {
+                var fbs = mouthCtrl.FBSTarget[fbsIndex];
+                var meshCtrl = fbs.GetSkinnedMeshRenderer();
+                var mesh = meshCtrl.sharedMesh;
+                int vertCount = mesh.vertexCount;
+                Vector3[] deltaVerts = new Vector3[vertCount];
+                Vector3[] deltaNorms = new Vector3[vertCount];
+                Vector3[] deltaTans = new Vector3[vertCount];
+                // tongue out (24) for the tongue controller (4), leave everything else as is
+                int ptn = fbsIndex == 4 ? fbs.PtnSet[24].Open : fbs.PtnSet[ptnIndex].Open;
+                mesh.GetBlendShapeFrameVertices(ptn, 0, deltaVerts, deltaNorms, deltaTans);
+                string name = "sexfaces.tongue_out."
+                    + mesh.GetBlendShapeName(fbs.PtnSet[ptnIndex].Open);
+                mesh.AddBlendShapeFrame(name, 1f, deltaVerts, deltaNorms, deltaTans);
+                int index = mesh.GetBlendShapeIndex(name);
+                fbs.PtnSet[ptnIndex].Open = index;
+                fbs.PtnSet[ptnIndex].Close = index;
+                // this looks stupid but we need to tell unity the mesh was modified
+                meshCtrl.sharedMesh = meshCtrl.sharedMesh;
+            }
         }
     }
 }

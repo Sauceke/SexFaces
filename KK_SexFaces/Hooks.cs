@@ -1,6 +1,9 @@
 ﻿using BepInEx.Harmony;
 using HarmonyLib;
 using KKAPI.Studio;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace KK_SexFaces
 {
