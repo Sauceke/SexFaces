@@ -143,6 +143,69 @@ namespace KK_SexFaces
                 }
             },
             {
+                "Ahegao 1",
+                new Dictionary<int, float>
+                {
+                    { 43, 1f}
+                }
+            },
+            {
+                "Ahegao 2",
+                new Dictionary<int, float>
+                {
+                    { 44, 1f}
+                }
+            },
+            {
+                "Ahegao 3",
+                new Dictionary<int, float>
+                {
+                    { 45, 1f}
+                }
+            },
+            {
+                "Sneer L",
+                new Dictionary<int, float>
+                {
+                    { 46, 1f}
+                }
+            },
+            {
+                "Sneer R",
+                new Dictionary<int, float>
+                {
+                    { 47, 1f}
+                }
+            },
+            {
+                "Smirk 1 L",
+                new Dictionary<int, float>
+                {
+                    { 48, 1f}
+                }
+            },
+            {
+                "Smirk 1 R",
+                new Dictionary<int, float>
+                {
+                    { 49, 1f}
+                }
+            },
+            {
+                "Smirk 2 L",
+                new Dictionary<int, float>
+                {
+                    { 50, 1f}
+                }
+            },
+            {
+                "Smirk 2 R",
+                new Dictionary<int, float>
+                {
+                    { 51, 1f}
+                }
+            },
+            {
                 "Excited",
                 new Dictionary<int, float>
                 {
