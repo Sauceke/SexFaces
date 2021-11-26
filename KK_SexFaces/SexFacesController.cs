@@ -108,6 +108,8 @@ namespace KK_SexFaces
                 }
                 yield return new WaitForSecondsRealtime(0.2f);
             }
+            Hooks.FacialExpressionLock.Locked = false;
+            Hooks.EyeDirectionLock.Locked = false;
         }
 
         protected override void OnCardBeingSaved(GameMode currentGameMode)
