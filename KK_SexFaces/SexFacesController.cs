@@ -22,13 +22,6 @@ namespace KK_SexFaces
         public Dictionary<string, FacialExpression> SexFaces { get; } =
             new Dictionary<string, FacialExpression>();
 
-        protected override void OnReload(GameMode currentGameMode)
-        {
-            SexFacesPlugin.Logger.LogDebug("Patching facial expressions for character "
-                + ChaFileControl.charaFileName);
-            StartCoroutine(PatchFaces());
-        }
-
         private IEnumerator PatchFaces()
         {
             // TODO: why the fuck does this not work immediately
@@ -83,6 +76,7 @@ namespace KK_SexFaces
             {
                 return;
             }
+            StartCoroutine(PatchFaces());
             if (!MakerAPI.InsideAndLoaded || MakerAPI.GetCharacterLoadFlags().Parameters)
             {
                 SexFaces.Clear();

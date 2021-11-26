@@ -1,5 +1,4 @@
-﻿using BepInEx.Harmony;
-using HarmonyLib;
+﻿using HarmonyLib;
 using KKAPI.Studio;
 
 namespace KK_SexFaces
@@ -11,9 +10,9 @@ namespace KK_SexFaces
         {
             if (!StudioAPI.InsideStudio)
             {
-                HarmonyWrapper.PatchAll(typeof(HSceneTriggers));
-                HarmonyWrapper.PatchAll(typeof(FacialExpressionLock));
-                HarmonyWrapper.PatchAll(typeof(EyeDirectionLock));
+                Harmony.CreateAndPatchAll(typeof(HSceneTriggers));
+                Harmony.CreateAndPatchAll(typeof(FacialExpressionLock));
+                Harmony.CreateAndPatchAll(typeof(EyeDirectionLock));
             }
         }
 
