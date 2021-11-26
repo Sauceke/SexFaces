@@ -4,9 +4,11 @@ using KKAPI;
 using KKAPI.Chara;
 using KKAPI.Maker;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
+using UnityEngine;
 
 namespace KK_SexFaces
 {
@@ -19,6 +21,28 @@ namespace KK_SexFaces
 
         public Dictionary<string, FacialExpression> SexFaces { get; } =
             new Dictionary<string, FacialExpression>();
+
+        protected override void OnReload(GameMode currentGameMode)
+        {
+            SexFacesPlugin.Logger.LogDebug("Patching facial expressions for character "
+                + ChaFileControl.charaFileName);
+            StartCoroutine(PatchFaces());
+        }
+
+        private IEnumerator PatchFaces()
+        {
+            // TODO: why the fuck does this not work immediately
+            yield return new WaitForSecondsRealtime(1);
+            PatchPatternForAhegao(2, newPtnIndex: 43);
+            PatchPatternForAhegao(11, newPtnIndex: 44);
+            PatchPatternForAhegao(39, newPtnIndex: 45);
+            PatchPatternForLopsided(12, leanRight: false, newPtnIndex: 46);
+            PatchPatternForLopsided(12, leanRight: true, newPtnIndex: 47);
+            PatchPatternForLopsided(27, leanRight: false, newPtnIndex: 48);
+            PatchPatternForLopsided(27, leanRight: true, newPtnIndex: 49);
+            PatchPatternForLopsided(28, leanRight: false, newPtnIndex: 50);
+            PatchPatternForLopsided(28, leanRight: true, newPtnIndex: 51);
+        }
 
         internal void OnForeplay(SaveData.Heroine.HExperienceKind experience)
         {
@@ -75,7 +99,7 @@ namespace KK_SexFaces
                 }
             }
         }
-        
+
         internal void Squint(float squintingFactor)
         {
             // The "correct" formula would be to multiply this by 2, but the upper 50% isn't that
@@ -154,6 +178,88 @@ namespace KK_SexFaces
             SaveData.Heroine.HExperienceKind experience)
         {
             return "sexFace(" + trigger + "," + (int)experience + ")";
+        }
+
+        private void PatchPatternForAhegao(int ptnIndex, int newPtnIndex)
+        {
+            var mouthCtrl = ChaControl.mouthCtrl;
+            for (int fbsIndex = 0; fbsIndex < mouthCtrl.FBSTarget.Length; fbsIndex++)
+            {
+                var fbs = mouthCtrl.FBSTarget[fbsIndex];
+                if (newPtnIndex >= fbs.PtnSet.Length)
+                {
+                    Array.Resize(ref fbs.PtnSet, newPtnIndex + 1);
+                    for (int i = 0; i < fbs.PtnSet.Length; i++)
+                    {
+                        fbs.PtnSet[i] = fbs.PtnSet[i] ?? new FBSTargetInfo.CloseOpen();
+                    }
+                }
+                // tongue out (24) for the tongue controller (4), leave everything else as is
+                int ptn = fbsIndex == 4 ? fbs.PtnSet[24].Open : fbs.PtnSet[ptnIndex].Open;
+                fbs.PtnSet[newPtnIndex].Open = ptn;
+                fbs.PtnSet[newPtnIndex].Close = ptn;
+            }
+        }
+
+        private void PatchPatternForLopsided(int ptnIndex, bool leanRight, int newPtnIndex)
+        {
+            var mouthCtrl = ChaControl.mouthCtrl;
+            for (int fbsIndex = 0; fbsIndex < mouthCtrl.FBSTarget.Length; fbsIndex++)
+            {
+                var fbs = mouthCtrl.FBSTarget[fbsIndex];
+                if (newPtnIndex >= fbs.PtnSet.Length)
+                {
+                    Array.Resize(ref fbs.PtnSet, newPtnIndex + 1);
+                    for (int i = 0; i < fbs.PtnSet.Length; i++)
+                    {
+                        fbs.PtnSet[i] = fbs.PtnSet[i] ?? new FBSTargetInfo.CloseOpen();
+                    }
+                }
+                var meshCtrl = fbs.GetSkinnedMeshRenderer();
+                var mesh = meshCtrl.sharedMesh;
+                int vertCount = mesh.vertexCount;
+                var deltaVertsOpen = new Vector3[vertCount];
+                var deltaVertsClosed = new Vector3[vertCount];
+                var deltaNorms = new Vector3[vertCount];
+                var deltaTans = new Vector3[vertCount];
+                float halfWidth = mesh.vertices.Max(_ => _.x);
+                int openPtn = fbs.PtnSet[ptnIndex].Open;
+                int closedPtn = fbs.PtnSet[ptnIndex].Close;
+                mesh.GetBlendShapeFrameVertices(openPtn, 0, deltaVertsOpen, deltaNorms, deltaTans);
+                mesh.GetBlendShapeFrameVertices(closedPtn, 0, deltaVertsClosed, deltaTans, deltaTans);
+                var deltaVertsLopsided = new Vector3[vertCount];
+                for (int i = 0; i < vertCount; i++)
+                {
+                    float relativeX = Mathf.InverseLerp(-halfWidth, halfWidth, mesh.vertices[i].x);
+                    float blend = Sigmoid(relativeX);
+                    if (leanRight)
+                    {
+                        blend = 1f - blend;
+                    }
+                    deltaVertsLopsided[i] = deltaVertsClosed[i] * blend
+                        + deltaVertsOpen[i] * (1f - blend);
+                }
+                string name = "sexfaces.lopsided." + (leanRight ? "right." : "left.")
+                    + mesh.GetBlendShapeName(fbs.PtnSet[ptnIndex].Close);
+                try
+                {
+                    mesh.AddBlendShapeFrame(name, 1f, deltaVertsLopsided, deltaNorms, deltaTans);
+                }
+                catch (ArgumentException)
+                {
+                    // not noteworthy, just means we have already patched this pattern
+                }
+                int index = mesh.GetBlendShapeIndex(name);
+                fbs.PtnSet[newPtnIndex].Open = index;
+                fbs.PtnSet[newPtnIndex].Close = fbs.PtnSet[ptnIndex].Close;
+                // this looks stupid but we need to tell unity the mesh was modified
+                meshCtrl.sharedMesh = meshCtrl.sharedMesh;
+            }
+        }
+
+        private float Sigmoid(float x)
+        {
+            return (float)(Math.Tanh((x - 0.5) * 10) + 1) / 2f;
         }
     }
 }
