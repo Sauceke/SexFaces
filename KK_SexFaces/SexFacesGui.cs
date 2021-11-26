@@ -38,11 +38,11 @@ namespace KK_SexFaces
                 new MakerRadioButtons(cat, plugin, "Experience:", EXP_DESCRIPTIONS));
             e.AddControl(new MakerButton("Register", cat, plugin))
                 .OnClick.AddListener(() => GetController().RegisterCurrent(
-                    SexFacesController.TRIGGERS[trigger.Value],
+                    SexFacesController.Triggers[trigger.Value],
                     (SaveData.Heroine.HExperienceKind)experience.Value));
             e.AddControl(new MakerButton("View", cat, plugin))
                 .OnClick.AddListener(() => GetController().PreviewSexFace(
-                    SexFacesController.TRIGGERS[trigger.Value],
+                    SexFacesController.Triggers[trigger.Value],
                     (SaveData.Heroine.HExperienceKind)experience.Value));
             e.AddControl(new MakerSeparator(cat, plugin));
             e.AddControl(new MakerText("Extra Expression Controls", cat, plugin));
@@ -70,6 +70,10 @@ namespace KK_SexFaces
                 "in the Operation Panel).",
                 cat, plugin))
                 .TextColor = new Color(0.7f, 0.7f, 0.7f);
+            e.AddControl(new MakerSlider(cat, "Left Iris Scale", 0, 2, 1, plugin))
+                .ValueChanged.Subscribe(GetController().ChangeLeftIrisScale);
+            e.AddControl(new MakerSlider(cat, "Right Iris Scale", 0, 2, 1, plugin))
+                .ValueChanged.Subscribe(GetController().ChangeRightIrisScale);
         }
 
         private static SexFacesController GetController()

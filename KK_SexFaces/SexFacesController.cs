@@ -7,20 +7,40 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Timers;
 using UnityEngine;
 
 namespace KK_SexFaces
 {
     public class SexFacesController : CharaCustomFunctionController
     {
-        public static readonly string[] TRIGGERS =
-            { nameof(OnForeplay), nameof(OnInsert), nameof(OnOrgasm) };
-
-        private const int ORG_COOLDOWN_MILLIS = 10 * 1000;
+        public static readonly string[] Triggers =
+        {
+            nameof(OnForeplay), nameof(OnInsert), nameof(OnOrgasm)
+        };
 
         public Dictionary<string, FacialExpression> SexFaces { get; } =
             new Dictionary<string, FacialExpression>();
+
+        private static readonly string[] insertAnimations =
+        {
+            "Insert", "A_Insert",
+            "WLoop", "SLoop",
+            "A_WLoop", "A_SLoop", "A_OLoop",
+            "OLoop", "A_OLoop"
+        };
+
+        private static readonly string[] orgAnimations =
+        {
+            "OUT_START", "OUT_LOOP", "IN_START", "IN_LOOP",
+            "M_OUT_Start", "M_OUT_Loop", "M_IN_Start", "M_IN_Loop",
+            "WS_IN_Start", "WS_IN_Loop", "SS_IN_Start", "SS_IN_Loop",
+            "A_WS_IN_Start", "A_WS_IN_Loop", "A_SS_IN_Start", "A_SS_IN_Loop"
+        };
+
+        private static readonly HFlag.EMode[] houshiModes =
+        {
+            HFlag.EMode.houshi, HFlag.EMode.houshi3P, HFlag.EMode.houshi3PMMF
+        };
 
         private IEnumerator PatchFaces()
         {
@@ -37,23 +57,57 @@ namespace KK_SexFaces
             PatchPatternForLopsided(28, leanRight: true, newPtnIndex: 51);
         }
 
-        internal void OnForeplay(SaveData.Heroine.HExperienceKind experience)
+        private void OnForeplay(SaveData.Heroine.HExperienceKind experience)
         {
             ApplySexFace(GetSexFaceId(nameof(OnForeplay), experience));
         }
 
-        internal void OnInsert(SaveData.Heroine.HExperienceKind experience)
+        private void OnInsert(SaveData.Heroine.HExperienceKind experience)
         {
             ApplySexFace(GetSexFaceId(nameof(OnInsert), experience));
         }
 
-        internal void OnOrgasm(SaveData.Heroine.HExperienceKind experience)
+        private void OnOrgasm(SaveData.Heroine.HExperienceKind experience)
         {
             ApplySexFace(GetSexFaceId(nameof(OnOrgasm), experience));
-            var timer = new Timer(ORG_COOLDOWN_MILLIS);
-            timer.Elapsed += (_source, _e) => OnForeplay(experience);
-            timer.AutoReset = false;
-            timer.Enabled = true;
+        }
+
+        internal void RunLoop(HFlag flags, SaveData.Heroine.HExperienceKind experience)
+        {
+            StopAllCoroutines();
+            StartCoroutine(Loop(flags, experience));
+        }
+
+        private IEnumerator Loop(HFlag flags, SaveData.Heroine.HExperienceKind experience)
+        {
+            Action<SaveData.Heroine.HExperienceKind> currentState = OnForeplay;
+            OnForeplay(experience);
+            while (!flags.isHSceneEnd)
+            {
+                Action<SaveData.Heroine.HExperienceKind> newState;
+                if (houshiModes.Contains(flags.mode))
+                {
+                    newState = OnForeplay;
+                }
+                else if (orgAnimations.Contains(flags.nowAnimStateName))
+                {
+                    newState = OnOrgasm;
+                }
+                else if (insertAnimations.Contains(flags.nowAnimStateName))
+                {
+                    newState = OnInsert;
+                }
+                else
+                {
+                    newState = OnForeplay;
+                }
+                if (currentState != newState)
+                {
+                    currentState = newState;
+                    newState(experience);
+                }
+                yield return new WaitForSecondsRealtime(0.2f);
+            }
         }
 
         protected override void OnCardBeingSaved(GameMode currentGameMode)
@@ -109,6 +163,22 @@ namespace KK_SexFaces
             ChaControl.eyesCtrl.ChangeFace(newExpression, true);
         }
 
+        internal void ChangeLeftIrisScale(float scale)
+        {
+            var eyeTexW = Mathf.Lerp(1.8f, -0.2f, ChaControl.fileFace.pupilWidth * scale);
+            var eyeTexH = Mathf.Lerp(1.8f, -0.2f, ChaControl.fileFace.pupilHeight * scale);
+            ChaControl.eyeLookMatCtrl[0].SetEyeTexScaleX(eyeTexW);
+            ChaControl.eyeLookMatCtrl[0].SetEyeTexScaleY(eyeTexH);
+        }
+
+        internal void ChangeRightIrisScale(float scale)
+        {
+            var eyeTexW = Mathf.Lerp(1.8f, -0.2f, ChaControl.fileFace.pupilWidth * scale);
+            var eyeTexH = Mathf.Lerp(1.8f, -0.2f, ChaControl.fileFace.pupilHeight * scale);
+            ChaControl.eyeLookMatCtrl[1].SetEyeTexScaleX(eyeTexW);
+            ChaControl.eyeLookMatCtrl[1].SetEyeTexScaleY(eyeTexH);
+        }
+
         internal void ApplyEyebrowPreset(int index)
         {
             ChaControl.eyebrowCtrl.ChangeFace(
@@ -136,8 +206,8 @@ namespace KK_SexFaces
 
         internal void PreviewSexFace(string trigger, SaveData.Heroine.HExperienceKind experience)
         {
-            KK_SexFaces.Hooks.FacialExpressionLock.Locked = false;
-            KK_SexFaces.Hooks.EyeDirectionLock.Locked = false;
+            Hooks.FacialExpressionLock.Locked = false;
+            Hooks.EyeDirectionLock.Locked = false;
             if (!SexFaces.TryGetValue(GetSexFaceId(trigger, experience), out var face))
             {
                 Utils.Sound.Play(SystemSE.cancel);
@@ -149,7 +219,7 @@ namespace KK_SexFaces
 
         private static IEnumerable<string> GetAllSexFaceIds()
         {
-            return from trigger in TRIGGERS
+            return from trigger in Triggers
                    from experience in Enum.GetValues(typeof(SaveData.Heroine.HExperienceKind))
                         .Cast<SaveData.Heroine.HExperienceKind>()
                    select GetSexFaceId(trigger, experience);
@@ -157,15 +227,15 @@ namespace KK_SexFaces
 
         private void ApplySexFace(string id)
         {
-            KK_SexFaces.Hooks.FacialExpressionLock.Locked = false;
-            KK_SexFaces.Hooks.EyeDirectionLock.Locked = false;
+            Hooks.FacialExpressionLock.Locked = false;
+            Hooks.EyeDirectionLock.Locked = false;
             if (!SexFaces.TryGetValue(id, out var face))
             {
                 return;
             }
             face.Apply(ChaControl);
-            KK_SexFaces.Hooks.FacialExpressionLock.Locked = true;
-            KK_SexFaces.Hooks.EyeDirectionLock.Locked = face.EyesTargetPos != null;
+            Hooks.FacialExpressionLock.Locked = true;
+            Hooks.EyeDirectionLock.Locked = face.EyesTargetPos != null;
         }
 
         private static string GetSexFaceId(string trigger,

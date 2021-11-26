@@ -2,6 +2,7 @@
 using BepInEx.Logging;
 using KKAPI;
 using KKAPI.Chara;
+using KKAPI.MainGame;
 
 namespace KK_SexFaces
 {
@@ -17,6 +18,7 @@ namespace KK_SexFaces
         {
             Logger = base.Logger;
             Hooks.InstallHooks();
+            GameAPI.RegisterExtraBehaviour<GameController>(GUID);
             CharacterApi.RegisterExtraBehaviour<SexFacesController>(GUID);
             SexFacesGui.Init(this);
         }

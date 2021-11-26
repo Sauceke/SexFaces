@@ -19,6 +19,10 @@ namespace KK_SexFaces
         public Quaternion? EyesTargetRot { get; set; }
         public string MouthExpression { get; set; }
         public float MouthOpenMax { get; set; }
+        public float LeftEyeScaleX { get; set; }
+        public float LeftEyeScaleY { get; set; }
+        public float RightEyeScaleX { get; set; }
+        public float RightEyeScaleY { get; set; }
 
         public string Serialize()
         {
@@ -43,6 +47,10 @@ namespace KK_SexFaces
 
         public static FacialExpression Capture(ChaControl chaControl)
         {
+            var eyeTexW = Mathf.Lerp(1.8f, -0.2f, chaControl.fileFace.pupilWidth);
+            var eyeTexH = Mathf.Lerp(1.8f, -0.2f, chaControl.fileFace.pupilHeight);
+            var leftEyeMatCtrl = chaControl.eyeLookMatCtrl[0];
+            var rightEyeMatCtrl = chaControl.eyeLookMatCtrl[1];
             var expression = new FacialExpression()
             {
                 EyebrowExpression = DictToString(GetExpression(chaControl.eyebrowCtrl)),
@@ -52,13 +60,18 @@ namespace KK_SexFaces
                 EyesBlinkFlag = chaControl.GetEyesBlinkFlag(),
                 LookEyesPattern = chaControl.GetLookEyesPtn(),
                 MouthExpression = DictToString(GetExpression(chaControl.mouthCtrl)),
-                MouthOpenMax = chaControl.GetMouthOpenMax()
+                MouthOpenMax = chaControl.GetMouthOpenMax(),
+                LeftEyeScaleX = leftEyeMatCtrl.GetEyeTexScale().x / eyeTexW,
+                LeftEyeScaleY = leftEyeMatCtrl.GetEyeTexScale().y / eyeTexH,
+                RightEyeScaleX = rightEyeMatCtrl.GetEyeTexScale().x / eyeTexW,
+                RightEyeScaleY = rightEyeMatCtrl.GetEyeTexScale().y / eyeTexH
             };
             if (IsLookingAtFixedPosition(chaControl))
             {
                 expression.EyesTargetPos = chaControl.objEyesLookTarget.transform.localPosition;
                 expression.EyesTargetRot = chaControl.objEyesLookTargetP.transform.localRotation;
             }
+            
             return expression;
         }
 
@@ -70,6 +83,14 @@ namespace KK_SexFaces
             chaControl.ChangeEyesOpenMax(EyesOpenMax);
             chaControl.ChangeEyesBlinkFlag(EyesBlinkFlag);
             chaControl.ChangeLookEyesPtn(LookEyesPattern);
+            var eyeTexW = Mathf.Lerp(1.8f, -0.2f, chaControl.fileFace.pupilWidth);
+            var eyeTexH = Mathf.Lerp(1.8f, -0.2f, chaControl.fileFace.pupilHeight);
+            var leftEyeMatCtrl = chaControl.eyeLookMatCtrl[0];
+            var rightEyeMatCtrl = chaControl.eyeLookMatCtrl[1];
+            leftEyeMatCtrl.SetEyeTexScaleX(eyeTexW * LeftEyeScaleX);
+            leftEyeMatCtrl.SetEyeTexScaleY(eyeTexH * LeftEyeScaleY);
+            rightEyeMatCtrl.SetEyeTexScaleX(eyeTexW * RightEyeScaleX);
+            rightEyeMatCtrl.SetEyeTexScaleY(eyeTexH * RightEyeScaleY);
             if (EyesTargetPos != null)
             {
                 chaControl.objEyesLookTargetP.transform.localRotation = EyesTargetRot.Value;

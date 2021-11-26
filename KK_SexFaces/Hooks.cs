@@ -10,7 +10,6 @@ namespace KK_SexFaces
         {
             if (!StudioAPI.InsideStudio)
             {
-                Harmony.CreateAndPatchAll(typeof(HSceneTriggers));
                 Harmony.CreateAndPatchAll(typeof(FacialExpressionLock));
                 Harmony.CreateAndPatchAll(typeof(EyeDirectionLock));
             }
@@ -44,47 +43,6 @@ namespace KK_SexFaces
             private static bool CanExecute()
             {
                 return !Locked;
-            }
-        }
-
-        private static class HSceneTriggers
-        {
-            [HarmonyPrefix]
-            [HarmonyPatch(typeof(HFlag), nameof(HFlag.AddAibuOrg))]
-            [HarmonyPatch(typeof(HFlag), nameof(HFlag.AddSonyuOrg))]
-            [HarmonyPatch(typeof(HFlag), nameof(HFlag.AddSonyuAnalOrg))]
-            public static void Orgasm(HFlag __instance)
-            {
-                GetController(__instance)
-                    .OnOrgasm(GetHeroine(__instance).HExperience);
-            }
-
-            [HarmonyPrefix]
-            [HarmonyPatch(typeof(HFlag), nameof(HFlag.SetInsertKokan))]
-            [HarmonyPatch(typeof(HFlag), nameof(HFlag.SetInsertAnal))]
-            public static void Insert(HFlag __instance)
-            {
-                GetController(__instance)
-                    .OnInsert(GetHeroine(__instance).HExperience);
-            }
-
-            [HarmonyPostfix]
-            [HarmonyPatch(typeof(HSprite), nameof(HSprite.InitHeroine))]
-            [HarmonyPatch(typeof(HSprite), nameof(HSprite.SetAibuStart))]
-            public static void Foreplay(HSprite __instance)
-            {
-                GetController(__instance.flags)
-                    .OnForeplay(GetHeroine(__instance.flags).HExperience);
-            }
-
-            private static SaveData.Heroine GetHeroine(HFlag hflag)
-            {
-                return hflag.lstHeroine[0];
-            }
-
-            private static SexFacesController GetController(HFlag hflag)
-            {
-                return GetHeroine(hflag).chaCtrl.GetComponent<SexFacesController>();
             }
         }
     }
