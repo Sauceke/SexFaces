@@ -1,9 +1,6 @@
 ﻿using BepInEx.Harmony;
 using HarmonyLib;
 using KKAPI.Studio;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 namespace KK_SexFaces
 {
@@ -33,7 +30,7 @@ namespace KK_SexFaces
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeLookEyesPtn))]
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeMouthPtn))]
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeMouthOpenMax))]
-            static bool CanExecute()
+            private static bool CanExecute()
             {
                 return !Locked;
             }
@@ -45,7 +42,7 @@ namespace KK_SexFaces
 
             [HarmonyPrefix]
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeLookEyesTarget))]
-            static bool CanExecute()
+            private static bool CanExecute()
             {
                 return !Locked;
             }
