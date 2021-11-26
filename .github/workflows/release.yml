@@ -29,16 +29,29 @@ jobs:
       run: nuget restore KK_SexFaces.sln
  
     - name: Build and Publish
-      run: msbuild KK_SexFaces.sln /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile
- 
-    - name: Release
-      uses: "marvinpinto/action-automatic-releases@latest"
+      run: msbuild KK_SexFaces.sln /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile /p:Version=${{ github.event.inputs.version }}
+
+    - name: Zip artifacts
+      run: powershell Compress-Archive -Path bin/BepInEx -DestinationPath KK_SexFaces.zip
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        prerelease: false
+        tag_name: v${{ github.event.inputs.version }}
+        release_name: Release v${{ github.event.inputs.version }}
+        body: write the changelog you lazy fuk
         draft: true
-        automatic_release_tag: ${{ github.event.inputs.version }}
-        files: |
-          bin/**/*.dll
-
-
+        prerelease: false
+        
+    - name: Upload Koikatsu Plugin
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./KK_SexFaces.zip
+        asset_name: KK_SexFaces_v{{ github.event.inputs.version }}.zip
+        asset_content_type: application/zip
