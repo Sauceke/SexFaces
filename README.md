@@ -7,7 +7,7 @@ Originally forked from ManlyMarco's [KK_SkinEffects plugin](https://github.com/M
 
 ## Installation
 1. Install [KKAPI](https://github.com/ManlyMarco/KKAPI) and its dependencies.
-1. Download the DLL from the latest release and move it into BepInEx\plugins under your game directory.
+1. Download the ZIP from [the latest release](https://github.com/Sauceke/KK_SexFaces/releases) and extract it into your game directory.
 1. Enjoy
 
 ## Usage
