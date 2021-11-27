@@ -19,10 +19,10 @@ namespace KK_SexFaces
         public Quaternion? EyesTargetRot { get; set; }
         public string MouthExpression { get; set; }
         public float MouthOpenMax { get; set; }
-        public float LeftEyeScaleX { get; set; }
-        public float LeftEyeScaleY { get; set; }
-        public float RightEyeScaleX { get; set; }
-        public float RightEyeScaleY { get; set; }
+        public float LeftEyeScaleX { get; set; } = 1f;
+        public float LeftEyeScaleY { get; set; } = 1f;
+        public float RightEyeScaleX { get; set; } = 1f;
+        public float RightEyeScaleY { get; set; } = 1f;
 
         public string Serialize()
         {
@@ -71,7 +71,6 @@ namespace KK_SexFaces
                 expression.EyesTargetPos = chaControl.objEyesLookTarget.transform.localPosition;
                 expression.EyesTargetRot = chaControl.objEyesLookTargetP.transform.localRotation;
             }
-            
             return expression;
         }
 
