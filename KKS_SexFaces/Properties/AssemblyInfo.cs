@@ -5,11 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("KK_SexFaces")]
+[assembly: AssemblyTitle("KKS_SexFaces")]
 [assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Sauceke")]
-[assembly: AssemblyProduct("KK_SexFaces")]
-[assembly: AssemblyCopyright("2020")]
+[assembly: AssemblyProduct("KKS_SexFaces")]
+[assembly: AssemblyCopyright("Copyright ©  2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -19,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("a03009c0-a7e2-48c6-9df9-63f043b7ed86")]
+[assembly: Guid("1023cdc2-5854-4ee5-b9d3-6d379f64031c")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,3 +33,4 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion(VersionInfo.Version)]
+[assembly: AssemblyFileVersion(VersionInfo.Version)]

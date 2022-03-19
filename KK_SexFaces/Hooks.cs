@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using KKAPI.Studio;
 
-namespace KK_SexFaces
+namespace SexFaces
 {
     internal static class Hooks
     {

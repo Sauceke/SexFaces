@@ -5,7 +5,7 @@ using KKAPI;
 using KKAPI.Chara;
 using KKAPI.MainGame;
 
-namespace KK_SexFaces
+namespace SexFaces
 {
     [BepInPlugin(GUID, "Sex Faces", VersionInfo.Version)]
     [BepInDependency(KoikatuAPI.GUID, KoikatuAPI.VersionConst)]

@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Xml.Serialization;
 using UnityEngine;
 
-namespace KK_SexFaces
+namespace SexFaces
 {
     public class FacialExpression
     {
@@ -76,9 +76,9 @@ namespace KK_SexFaces
 
         public void Apply(ChaControl chaControl)
         {
-            chaControl.eyebrowCtrl.ChangeFace(StringToDict(EyebrowExpression), true);
+            chaControl.eyebrowCtrl.SetFace(StringToDict(EyebrowExpression), true);
             chaControl.ChangeEyebrowOpenMax(EyebrowOpenMax);
-            chaControl.eyesCtrl.ChangeFace(StringToDict(EyeExpression), true);
+            chaControl.eyesCtrl.SetFace(StringToDict(EyeExpression), true);
             chaControl.ChangeEyesOpenMax(EyesOpenMax);
             chaControl.ChangeEyesBlinkFlag(EyesBlinkFlag);
             chaControl.ChangeLookEyesPtn(LookEyesPattern);
@@ -102,7 +102,7 @@ namespace KK_SexFaces
             {
                 chaControl.eyeLookCtrl.target = Camera.current.transform;
             }
-            chaControl.mouthCtrl.ChangeFace(StringToDict(MouthExpression), true);
+            chaControl.mouthCtrl.SetFace(StringToDict(MouthExpression), true);
             chaControl.ChangeMouthOpenMax(MouthOpenMax);
         }
 

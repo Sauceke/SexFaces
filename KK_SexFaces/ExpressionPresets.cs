@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace KK_SexFaces
+namespace SexFaces
 {
     public class ExpressionPresets
     {
