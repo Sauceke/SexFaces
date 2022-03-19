@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1023CDC2-5854-4EE5-B9D3-6D379F64031C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SexFaces</RootNamespace>
+    <AssemblyName>KKS_SexFaces</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>embedded</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\SexFaces.KKS\BepInEx\plugins\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>embedded</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\SexFaces.KKS\BepInEx\plugins\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\KK_SexFaces\ExpressionPresets.cs">
+      <Link>ExpressionPresets.cs</Link>
+    </Compile>
+    <Compile Include="..\KK_SexFaces\FacialExpression.cs">
+      <Link>FacialExpression.cs</Link>
+    </Compile>
+    <Compile Include="..\KK_SexFaces\GameController.cs">
+      <Link>GameController.cs</Link>
+    </Compile>
+    <Compile Include="..\KK_SexFaces\Hooks.cs">
+      <Link>Hooks.cs</Link>
+    </Compile>
+    <Compile Include="..\KK_SexFaces\SexFacesController.cs">
+      <Link>SexFacesController.cs</Link>
+    </Compile>
+    <Compile Include="..\KK_SexFaces\SexFacesGui.cs">
+      <Link>SexFacesGui.cs</Link>
+    </Compile>
+    <Compile Include="..\KK_SexFaces\SexFacesPlugin.cs">
+      <Link>SexFacesPlugin.cs</Link>
+    </Compile>
+    <Compile Include="..\KK_SexFaces\VersionInfo.cs">
+      <Link>VersionInfo.cs</Link>
+    </Compile>
+    <Compile Include="FBSExtensions.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ExtensibleSaveFormat.KoikatsuSunshine" ExcludeAssets="runtime">
+      <Version>17.0.0</Version>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="IllusionLibs.BepInEx" ExcludeAssets="runtime">
+      <Version>5.4.15</Version>
+    </PackageReference>
+    <PackageReference Include="IllusionLibs.BepInEx.Harmony" ExcludeAssets="runtime">
+      <Version>2.5.4</Version>
+    </PackageReference>
+    <PackageReference Include="IllusionLibs.KoikatsuSunshine.Assembly-CSharp">
+      <Version>2021.9.17</Version>
+    </PackageReference>
+    <PackageReference Include="IllusionLibs.KoikatsuSunshine.Assembly-CSharp-firstpass">
+      <Version>2021.9.17</Version>
+    </PackageReference>
+    <PackageReference Include="IllusionLibs.KoikatsuSunshine.UniRx">
+      <Version>2021.9.17</Version>
+    </PackageReference>
+    <PackageReference Include="IllusionLibs.KoikatsuSunshine.UniTask">
+      <Version>2021.9.17</Version>
+    </PackageReference>
+    <PackageReference Include="IllusionLibs.KoikatsuSunshine.UnityEngine.AudioModule">
+      <Version>2019.4.9</Version>
+    </PackageReference>
+    <PackageReference Include="IllusionLibs.KoikatsuSunshine.UnityEngine.CoreModule">
+      <Version>2019.4.9</Version>
+    </PackageReference>
+    <PackageReference Include="IllusionLibs.KoikatsuSunshine.UnityEngine.IMGUIModule">
+      <Version>2019.4.9</Version>
+    </PackageReference>
+    <PackageReference Include="IllusionLibs.KoikatsuSunshine.UnityEngine.InputLegacyModule">
+      <Version>2019.4.9</Version>
+    </PackageReference>
+    <PackageReference Include="IllusionLibs.KoikatsuSunshine.UnityEngine.UI">
+      <Version>2019.4.9</Version>
+    </PackageReference>
+    <PackageReference Include="IllusionLibs.KoikatsuSunshine.UnityEngine.UIModule">
+      <Version>2019.4.9</Version>
+    </PackageReference>
+    <PackageReference Include="IllusionModdingAPI.KKSAPI" ExcludeAssets="runtime">
+      <Version>1.31.2</Version>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -9,9 +9,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace KK_SexFaces
+namespace SexFaces
 {
-    public class SexFacesController : CharaCustomFunctionController
+    internal class SexFacesController : CharaCustomFunctionController
     {
         public static readonly string[] Triggers =
         {
@@ -162,7 +162,7 @@ namespace KK_SexFaces
                     { squintingFactor < .5f ? 5 : 6,  winkWeight},
                     { ChaControl.GetEyesPtn(), 1 - winkWeight}
                 };
-            ChaControl.eyesCtrl.ChangeFace(newExpression, true);
+            ChaControl.eyesCtrl.SetFace(newExpression, true);
         }
 
         internal void ChangeLeftIrisScale(float scale)
@@ -183,20 +183,20 @@ namespace KK_SexFaces
 
         internal void ApplyEyebrowPreset(int index)
         {
-            ChaControl.eyebrowCtrl.ChangeFace(
-                ExpressionPresets.eyebrowExpressions.Values.ElementAt(index), true);
+            ChaControl.eyebrowCtrl.SetFace(
+                ExpressionPresets.eyebrowExpressions.Values.ElementAt(index), false);
         }
 
         internal void ApplyEyePreset(int index)
         {
-            ChaControl.eyesCtrl.ChangeFace(
-                ExpressionPresets.eyeExpressions.Values.ElementAt(index), true);
+            ChaControl.eyesCtrl.SetFace(
+                ExpressionPresets.eyeExpressions.Values.ElementAt(index), false);
         }
 
         internal void ApplyMouthPreset(int index)
         {
-            ChaControl.mouthCtrl.ChangeFace(
-                ExpressionPresets.mouthExpressions.Values.ElementAt(index), true);
+            ChaControl.mouthCtrl.SetFace(
+                ExpressionPresets.mouthExpressions.Values.ElementAt(index), false);
         }
 
         internal void RegisterCurrent(string trigger, SaveData.Heroine.HExperienceKind experience)

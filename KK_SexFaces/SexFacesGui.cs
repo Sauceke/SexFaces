@@ -4,7 +4,7 @@ using System.Collections;
 using UniRx;
 using UnityEngine;
 
-namespace KK_SexFaces
+namespace SexFaces
 {
     internal static class SexFacesGui
     {

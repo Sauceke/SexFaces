@@ -1,10 +1,11 @@
 ﻿using KKAPI.MainGame;
+using UnityEngine;
 
-namespace KK_SexFaces
+namespace SexFaces
 {
-    class GameController : GameCustomFunctionController
+    internal class GameController : GameCustomFunctionController
     {
-        protected override void OnStartH(BaseLoader proc, HFlag hFlag, bool vr)
+        protected override void OnStartH(MonoBehaviour proc, HFlag hFlag, bool vr)
         {
             SexFacesPlugin.Logger.LogDebug("H scene started.");
             hFlag.lstHeroine.ForEach(heroine => GetController(heroine).RunLoop(

@@ -26,13 +26,14 @@ jobs:
       uses: NuGet/setup-nuget@v1.0.2
      
     - name: Restore NuGet Packages
-      run: nuget restore KK_SexFaces.sln
+      run: nuget restore SexFaces.sln
  
     - name: Build and Publish
-      run: msbuild KK_SexFaces.sln /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile /p:Version=${{ github.event.inputs.version }}
+      run: msbuild SexFaces.sln /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile /p:Version=${{ github.event.inputs.version }}
 
     - name: Zip artifacts
-      run: powershell Compress-Archive -Path bin/BepInEx -DestinationPath KK_SexFaces.zip
+      run: powershell Compress-Archive -Path bin/SexFaces.KK/BepInEx -DestinationPath KK_SexFaces.zip
+      run: powershell Compress-Archive -Path bin/SexFaces.KKS/BepInEx -DestinationPath KKS_SexFaces.zip
 
     - name: Create Release
       id: create_release
