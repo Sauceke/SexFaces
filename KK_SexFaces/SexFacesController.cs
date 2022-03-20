@@ -162,7 +162,7 @@ namespace SexFaces
                     { squintingFactor < .5f ? 5 : 6,  winkWeight},
                     { ChaControl.GetEyesPtn(), 1 - winkWeight}
                 };
-            ChaControl.eyesCtrl.SetFace(newExpression, true);
+            ChaControl.eyesCtrl.ChangeFace(newExpression, true);
         }
 
         internal void ChangeLeftIrisScale(float scale)
@@ -183,26 +183,37 @@ namespace SexFaces
 
         internal void ApplyEyebrowPreset(int index)
         {
-            ChaControl.eyebrowCtrl.SetFace(
+            ChaControl.eyebrowCtrl.ChangeFace(
                 ExpressionPresets.eyebrowExpressions.Values.ElementAt(index), false);
         }
 
         internal void ApplyEyePreset(int index)
         {
-            ChaControl.eyesCtrl.SetFace(
+            ChaControl.eyesCtrl.ChangeFace(
                 ExpressionPresets.eyeExpressions.Values.ElementAt(index), false);
         }
 
         internal void ApplyMouthPreset(int index)
         {
-            ChaControl.mouthCtrl.SetFace(
+            ChaControl.mouthCtrl.ChangeFace(
                 ExpressionPresets.mouthExpressions.Values.ElementAt(index), false);
         }
 
         internal void RegisterCurrent(string trigger, SaveData.Heroine.HExperienceKind experience)
         {
-            SexFaces[GetSexFaceId(trigger, experience)] =
-                FacialExpression.Capture(MakerAPI.GetCharacterControl());
+            var face = FacialExpression.Capture(MakerAPI.GetCharacterControl());
+            if (face.MouthOpenMax < 0.2f)
+            {
+                SexFacesGui.ConfirmSaveWithClosedMouth(_ => SaveFace(face, trigger, experience));
+                return;
+            }
+            SaveFace(face, trigger, experience);
+        }
+
+        private void SaveFace(FacialExpression face, string trigger,
+            SaveData.Heroine.HExperienceKind experience)
+        {
+            SexFaces[GetSexFaceId(trigger, experience)] = face;
             Utils.Sound.Play(SystemSE.ok_s);
         }
 

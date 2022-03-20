@@ -71,7 +71,7 @@
     <Compile Include="..\KK_SexFaces\VersionInfo.cs">
       <Link>VersionInfo.cs</Link>
     </Compile>
-    <Compile Include="FBSExtensions.cs" />
+    <Compile Include="CompatExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

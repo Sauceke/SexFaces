@@ -1,5 +1,9 @@
-﻿using KKAPI.Maker;
+﻿using ChaCustom;
+using HarmonyLib;
+using Illusion.Game;
+using KKAPI.Maker;
 using KKAPI.Maker.UI;
+using System;
 using System.Collections;
 using UniRx;
 using UnityEngine;
@@ -8,9 +12,16 @@ namespace SexFaces
 {
     internal static class SexFacesGui
     {
-        public static readonly string[] TRIGGER_DESCRIPTIONS = { "Foreplay", "Penetration", "Orgasm" };
+        public static readonly string[] TRIGGER_DESCRIPTIONS = 
+            { "Foreplay", "Penetration", "Orgasm" };
         public static readonly string[] EXP_DESCRIPTIONS =
             { "First Time", "Amateur", "Pro", "Lewd" };
+
+        private static SexFacesController Controller =>
+            MakerAPI.GetCharacterControl().gameObject.GetComponent<SexFacesController>();
+
+        public static CustomCheckWindow CheckWindow =>
+            UnityEngine.Object.FindObjectOfType<CustomCharaFile>().checkWindow;
 
         public static void Init(SexFacesPlugin plugin)
         {
@@ -32,33 +43,33 @@ namespace SexFaces
             var experience = e.AddControl(
                 new MakerRadioButtons(cat, plugin, "Experience:", EXP_DESCRIPTIONS));
             e.AddControl(new MakerButton("Register", cat, plugin))
-                .OnClick.AddListener(() => GetController().RegisterCurrent(
+                .OnClick.AddListener(() => Controller.RegisterCurrent(
                     SexFacesController.Triggers[trigger.Value],
                     (SaveData.Heroine.HExperienceKind)experience.Value));
             e.AddControl(new MakerButton("View", cat, plugin))
-                .OnClick.AddListener(() => GetController().PreviewSexFace(
+                .OnClick.AddListener(() => Controller.PreviewSexFace(
                     SexFacesController.Triggers[trigger.Value],
                     (SaveData.Heroine.HExperienceKind)experience.Value));
             e.AddControl(new MakerSeparator(cat, plugin));
             e.AddControl(new MakerText("Extra Expression Controls", cat, plugin));
             e.AddControl(new MakerDropdown("Extra Eyebrow Expressions",
                 GetDictKeys(ExpressionPresets.eyebrowExpressions), cat, 0, plugin))
-                .ValueChanged.Subscribe(GetController().ApplyEyebrowPreset);
+                .ValueChanged.Subscribe(Controller.ApplyEyebrowPreset);
             e.AddControl(new MakerDropdown("Extra Eye Expressions",
                 GetDictKeys(ExpressionPresets.eyeExpressions), cat, 0, plugin))
-                .ValueChanged.Subscribe(GetController().ApplyEyePreset);
+                .ValueChanged.Subscribe(Controller.ApplyEyePreset);
             e.AddControl(new MakerDropdown("Extra Mouth Expressions",
                 GetDictKeys(ExpressionPresets.mouthExpressions), cat, 0, plugin))
-                .ValueChanged.Subscribe(GetController().ApplyMouthPreset);
+                .ValueChanged.Subscribe(Controller.ApplyMouthPreset);
             e.AddControl(new MakerSlider(cat, "Eyebrow Limit", 0, 1, 1, plugin))
-                .ValueChanged.Subscribe(GetController().ChaControl.ChangeEyebrowOpenMax);
+                .ValueChanged.Subscribe(Controller.ChaControl.ChangeEyebrowOpenMax);
             e.AddControl(new MakerText(
                 "Sets how much the eyebrows are allowed to move\n" +
                 "when the character blinks.",
                 cat, plugin))
                 .TextColor = new Color(0.7f, 0.7f, 0.7f); ;
             e.AddControl(new MakerSlider(cat, "o_O Scale", 0, 1, .5f, plugin))
-                .ValueChanged.Subscribe(GetController().Squint);
+                .ValueChanged.Subscribe(Controller.Squint);
             e.AddControl(new MakerText(
                 "Makes one eye wider than the other.\n" +
                 "For basic eye expressions only (the ones listed\n" +
@@ -66,14 +77,18 @@ namespace SexFaces
                 cat, plugin))
                 .TextColor = new Color(0.7f, 0.7f, 0.7f);
             e.AddControl(new MakerSlider(cat, "Left Iris Scale", 0, 2, 1, plugin))
-                .ValueChanged.Subscribe(GetController().ChangeLeftIrisScale);
+                .ValueChanged.Subscribe(Controller.ChangeLeftIrisScale);
             e.AddControl(new MakerSlider(cat, "Right Iris Scale", 0, 2, 1, plugin))
-                .ValueChanged.Subscribe(GetController().ChangeRightIrisScale);
+                .ValueChanged.Subscribe(Controller.ChangeRightIrisScale);
         }
 
-        private static SexFacesController GetController()
+        public static void ConfirmSaveWithClosedMouth(Action<string> onYes)
         {
-            return MakerAPI.GetCharacterControl().gameObject.GetComponent<SexFacesController>();
+            Utils.Sound.Play(SystemSE.window_o);
+            CheckWindow.Setup(CustomCheckWindow.CheckType.YesNo,
+                    "The mouth is shut. Save anyway?",
+                    strSubMsg: null, strInput: null,
+                    onYes, null);
         }
 
         private static string[] GetDictKeys(IDictionary dict)

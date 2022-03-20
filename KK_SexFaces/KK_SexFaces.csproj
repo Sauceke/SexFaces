@@ -46,7 +46,6 @@
   <ItemGroup>
     <Compile Include="ExpressionPresets.cs" />
     <Compile Include="FacialExpression.cs" />
-    <Compile Include="FBSExtensions.cs" />
     <Compile Include="GameController.cs" />
     <Compile Include="Hooks.cs" />
     <Compile Include="SexFacesController.cs" />

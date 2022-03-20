@@ -76,9 +76,9 @@ namespace SexFaces
 
         public void Apply(ChaControl chaControl)
         {
-            chaControl.eyebrowCtrl.SetFace(StringToDict(EyebrowExpression), true);
+            chaControl.eyebrowCtrl.ChangeFace(StringToDict(EyebrowExpression), true);
             chaControl.ChangeEyebrowOpenMax(EyebrowOpenMax);
-            chaControl.eyesCtrl.SetFace(StringToDict(EyeExpression), true);
+            chaControl.eyesCtrl.ChangeFace(StringToDict(EyeExpression), true);
             chaControl.ChangeEyesOpenMax(EyesOpenMax);
             chaControl.ChangeEyesBlinkFlag(EyesBlinkFlag);
             chaControl.ChangeLookEyesPtn(LookEyesPattern);
@@ -102,7 +102,7 @@ namespace SexFaces
             {
                 chaControl.eyeLookCtrl.target = Camera.current.transform;
             }
-            chaControl.mouthCtrl.SetFace(StringToDict(MouthExpression), true);
+            chaControl.mouthCtrl.ChangeFace(StringToDict(MouthExpression), true);
             chaControl.ChangeMouthOpenMax(MouthOpenMax);
         }
 
