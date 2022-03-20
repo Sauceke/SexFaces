@@ -167,18 +167,27 @@ namespace SexFaces
 
         internal void ChangeLeftIrisScale(float scale)
         {
-            var eyeTexW = Mathf.Lerp(1.8f, -0.2f, ChaControl.fileFace.pupilWidth * scale);
-            var eyeTexH = Mathf.Lerp(1.8f, -0.2f, ChaControl.fileFace.pupilHeight * scale);
-            ChaControl.eyeLookMatCtrl[0].SetEyeTexScaleX(eyeTexW);
-            ChaControl.eyeLookMatCtrl[0].SetEyeTexScaleY(eyeTexH);
+            ChangeIrisScale(0, scale);
         }
 
         internal void ChangeRightIrisScale(float scale)
         {
+            ChangeIrisScale(1, scale);
+        }
+
+        private void ChangeIrisScale(int index, float scale)
+        {
+            // exact formula used by the game
             var eyeTexW = Mathf.Lerp(1.8f, -0.2f, ChaControl.fileFace.pupilWidth * scale);
             var eyeTexH = Mathf.Lerp(1.8f, -0.2f, ChaControl.fileFace.pupilHeight * scale);
-            ChaControl.eyeLookMatCtrl[1].SetEyeTexScaleX(eyeTexW);
-            ChaControl.eyeLookMatCtrl[1].SetEyeTexScaleY(eyeTexH);
+            ChaControl.eyeLookMatCtrl[index].SetEyeTexScaleX(eyeTexW);
+            ChaControl.eyeLookMatCtrl[index].SetEyeTexScaleY(eyeTexH);
+        }
+
+        private void ResetIrisScales()
+        {
+            ChangeLeftIrisScale(1f);
+            ChangeRightIrisScale(1f);
         }
 
         internal void ApplyEyebrowPreset(int index)
@@ -244,6 +253,7 @@ namespace SexFaces
             Hooks.EyeDirectionLock.Locked = false;
             if (!SexFaces.TryGetValue(id, out var face))
             {
+                ResetIrisScales();
                 return;
             }
             face.Apply(ChaControl);
@@ -303,7 +313,8 @@ namespace SexFaces
                 int openPtn = fbs.PtnSet[ptnIndex].Open;
                 int closedPtn = fbs.PtnSet[ptnIndex].Close;
                 mesh.GetBlendShapeFrameVertices(openPtn, 0, deltaVertsOpen, deltaNorms, deltaTans);
-                mesh.GetBlendShapeFrameVertices(closedPtn, 0, deltaVertsClosed, deltaTans, deltaTans);
+                mesh.GetBlendShapeFrameVertices(closedPtn, 0, deltaVertsClosed, deltaNorms,
+                    deltaTans);
                 var deltaVertsLopsided = new Vector3[vertCount];
                 for (int i = 0; i < vertCount; i++)
                 {
