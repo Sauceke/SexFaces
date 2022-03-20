@@ -20,11 +20,6 @@ namespace SexFaces
 
         private static void RegisterMakerControls(SexFacesPlugin plugin, RegisterSubCategoriesEvent e)
         {
-            // Doesn't apply to male characters
-            if (MakerAPI.GetMakerSex() == 0)
-            {
-                return;
-            }
             var cat = new MakerCategory(MakerConstants.Parameter.Character.CategoryName, "Sex Faces");
             e.AddSubCategory(cat);
             e.AddControl(new MakerText(
