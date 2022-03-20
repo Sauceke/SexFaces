@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using KKAPI.Studio;
+using System.Collections.Generic;
 
 namespace SexFaces
 {
@@ -17,7 +18,17 @@ namespace SexFaces
 
         public static class FacialExpressionLock
         {
-            public static bool Locked { get; set; } = false;
+            private static HashSet<ChaControl> lockedControls = new HashSet<ChaControl>();
+
+            public static void Lock(ChaControl control)
+            {
+                lockedControls.Add(control);
+            }
+
+            public static void Unlock(ChaControl control)
+            {
+                lockedControls.Remove(control);
+            }
 
             [HarmonyPrefix]
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeEyebrowPtn))]
@@ -28,21 +39,31 @@ namespace SexFaces
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeLookEyesPtn))]
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeMouthPtn))]
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeMouthOpenMax))]
-            private static bool CanExecute()
+            private static bool CanExecute(ChaControl __instance)
             {
-                return !Locked;
+                return !lockedControls.Contains(__instance);
             }
         }
 
         public static class EyeDirectionLock
         {
-            public static bool Locked { get; set; } = false;
+            private static HashSet<ChaControl> lockedControls = new HashSet<ChaControl>();
+
+            public static void Lock(ChaControl control)
+            {
+                lockedControls.Add(control);
+            }
+
+            public static void Unlock(ChaControl control)
+            {
+                lockedControls.Remove(control);
+            }
 
             [HarmonyPrefix]
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeLookEyesTarget))]
-            private static bool CanExecute()
+            private static bool CanExecute(ChaControl __instance)
             {
-                return !Locked;
+                return !lockedControls.Contains(__instance);
             }
         }
     }

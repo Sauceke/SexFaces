@@ -108,8 +108,8 @@ namespace SexFaces
                 }
                 yield return new WaitForSecondsRealtime(0.2f);
             }
-            Hooks.FacialExpressionLock.Locked = false;
-            Hooks.EyeDirectionLock.Locked = false;
+            Hooks.FacialExpressionLock.Unlock(ChaControl);
+            Hooks.EyeDirectionLock.Unlock(ChaControl);
         }
 
         protected override void OnCardBeingSaved(GameMode currentGameMode)
@@ -228,8 +228,8 @@ namespace SexFaces
 
         internal void PreviewSexFace(string trigger, SaveData.Heroine.HExperienceKind experience)
         {
-            Hooks.FacialExpressionLock.Locked = false;
-            Hooks.EyeDirectionLock.Locked = false;
+            Hooks.FacialExpressionLock.Unlock(ChaControl);
+            Hooks.EyeDirectionLock.Unlock(ChaControl);
             if (!SexFaces.TryGetValue(GetSexFaceId(trigger, experience), out var face))
             {
                 Utils.Sound.Play(SystemSE.cancel);
@@ -249,16 +249,19 @@ namespace SexFaces
 
         private void ApplySexFace(string id)
         {
-            Hooks.FacialExpressionLock.Locked = false;
-            Hooks.EyeDirectionLock.Locked = false;
+            Hooks.FacialExpressionLock.Unlock(ChaControl);
+            Hooks.EyeDirectionLock.Unlock(ChaControl);
             if (!SexFaces.TryGetValue(id, out var face))
             {
                 ResetIrisScales();
                 return;
             }
             face.Apply(ChaControl);
-            Hooks.FacialExpressionLock.Locked = true;
-            Hooks.EyeDirectionLock.Locked = face.EyesTargetPos != null;
+            Hooks.FacialExpressionLock.Lock(ChaControl);
+            if (face.EyesTargetPos != null)
+            {
+                Hooks.EyeDirectionLock.Lock(ChaControl);
+            }
         }
 
         private static string GetSexFaceId(string trigger,
