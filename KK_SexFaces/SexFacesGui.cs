@@ -81,13 +81,13 @@ namespace SexFaces
                 .ValueChanged.Subscribe(Controller.ChangeRightIrisScale);
         }
 
-        public static void ConfirmSaveWithClosedMouth(Action<string> onYes)
+        public static void OfferSaveWithOpenMouth(Action<string> onYes, Action<string> onNo)
         {
             Utils.Sound.Play(SystemSE.window_o);
             CheckWindow.Setup(CustomCheckWindow.CheckType.YesNo,
-                    "The mouth is shut. Save anyway?",
+                    "Mouth must be open for lip sync. Make it open?",
                     strSubMsg: null, strInput: null,
-                    onYes, null);
+                    onYes, onNo);
         }
 
         private static string[] GetDictKeys(IDictionary dict)

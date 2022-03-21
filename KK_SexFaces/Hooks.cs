@@ -68,7 +68,7 @@ namespace SexFaces
 
             [HarmonyPrefix]
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeLookEyesTarget))]
-            private static bool CanExecute(ChaControl __instance)
+            private static bool CanChange(ChaControl __instance)
             {
                 return !lockedControls.Contains(__instance);
             }

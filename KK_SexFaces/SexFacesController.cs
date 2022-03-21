@@ -214,9 +214,11 @@ namespace SexFaces
         internal void RegisterCurrent(string trigger, SaveData.Heroine.HExperienceKind experience)
         {
             var face = FacialExpression.Capture(MakerAPI.GetCharacterControl());
-            if (face.MouthOpenMax < 0.2f)
+            if (face.MouthOpenMax < 0.5f)
             {
-                SexFacesGui.ConfirmSaveWithClosedMouth(_ => SaveFace(face, trigger, experience));
+                SexFacesGui.OfferSaveWithOpenMouth(
+                    onYes: _ => SaveFaceWithOpenMouth(face, trigger, experience),
+                    onNo: _ => SaveFace(face, trigger, experience));
                 return;
             }
             SaveFace(face, trigger, experience);
@@ -226,7 +228,14 @@ namespace SexFaces
             SaveData.Heroine.HExperienceKind experience)
         {
             SexFaces[GetSexFaceId(trigger, experience)] = face;
-            Utils.Sound.Play(SystemSE.ok_s);
+            PreviewSexFace(trigger, experience);
+        }
+
+        private void SaveFaceWithOpenMouth(FacialExpression face, string trigger,
+            SaveData.Heroine.HExperienceKind experience)
+        {
+            face.MouthOpenMax = 1f;
+            SaveFace(face, trigger, experience);
         }
 
         internal void PreviewSexFace(string trigger, SaveData.Heroine.HExperienceKind experience)
