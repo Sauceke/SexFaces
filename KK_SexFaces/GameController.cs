@@ -8,15 +8,11 @@ namespace SexFaces
         protected override void OnStartH(MonoBehaviour proc, HFlag hFlag, bool vr)
         {
             SexFacesPlugin.Logger.LogDebug("H scene started.");
-            hFlag.lstHeroine.ForEach(heroine => GetController(heroine).RunLoop(
-                hFlag, heroine.HExperience));
-            hFlag.player.chaCtrl.GetComponent<SexFacesController>().RunLoop(
-                hFlag, hFlag.lstHeroine[0].HExperience);
-        }
-
-        private static SexFacesController GetController(SaveData.Heroine heroine)
-        {
-            return heroine.chaCtrl.GetComponent<SexFacesController>();
+            var hand = vr ? null : ((HSceneProc)proc).hand;
+            hFlag.lstHeroine.ForEach(heroine =>
+                heroine.GetSexFacesController().RunLoop(hFlag, heroine.HExperience, hand));
+            hFlag.player.GetSexFacesController()
+                .RunLoop(hFlag, hFlag.lstHeroine[0].HExperience, hand);
         }
     }
 }

@@ -47,6 +47,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\KK_SexFaces\CharaExtensions.cs">
+      <Link>CharaExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\KK_SexFaces\ExpressionPresets.cs">
       <Link>ExpressionPresets.cs</Link>
     </Compile>

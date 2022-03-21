@@ -18,9 +18,6 @@ namespace SexFaces
             nameof(OnForeplay), nameof(OnInsert), nameof(OnOrgasm)
         };
 
-        public Dictionary<string, FacialExpression> SexFaces { get; } =
-            new Dictionary<string, FacialExpression>();
-
         private static readonly string[] insertAnimations =
         {
             "Insert", "A_Insert",
@@ -42,6 +39,9 @@ namespace SexFaces
             HFlag.EMode.houshi, HFlag.EMode.houshi3P, HFlag.EMode.houshi3PMMF
         };
 
+        public Dictionary<string, FacialExpression> SexFaces { get; } =
+            new Dictionary<string, FacialExpression>();
+
         private IEnumerator PatchFaces()
         {
             // TODO: why the fuck does this not work immediately
@@ -62,6 +62,13 @@ namespace SexFaces
             ApplySexFace(GetSexFaceId(nameof(OnForeplay), experience));
         }
 
+        private void OnService(SaveData.Heroine.HExperienceKind experience)
+        {
+            OnForeplay(experience);
+        }
+
+        private void OnKiss(SaveData.Heroine.HExperienceKind experience) { }
+
         private void OnInsert(SaveData.Heroine.HExperienceKind experience)
         {
             ApplySexFace(GetSexFaceId(nameof(OnInsert), experience));
@@ -72,35 +79,21 @@ namespace SexFaces
             ApplySexFace(GetSexFaceId(nameof(OnOrgasm), experience));
         }
 
-        internal void RunLoop(HFlag flags, SaveData.Heroine.HExperienceKind experience)
+        internal void RunLoop(HFlag flags, SaveData.Heroine.HExperienceKind experience,
+            HandCtrl hand)
         {
             StopAllCoroutines();
-            StartCoroutine(Loop(flags, experience));
+            StartCoroutine(Loop(flags, experience, hand));
         }
 
-        private IEnumerator Loop(HFlag flags, SaveData.Heroine.HExperienceKind experience)
+        private IEnumerator Loop(HFlag flags, SaveData.Heroine.HExperienceKind experience,
+            HandCtrl hand)
         {
             Action<SaveData.Heroine.HExperienceKind> currentState = OnForeplay;
             OnForeplay(experience);
             while (!flags.isHSceneEnd)
             {
-                Action<SaveData.Heroine.HExperienceKind> newState;
-                if (houshiModes.Contains(flags.mode))
-                {
-                    newState = OnForeplay;
-                }
-                else if (orgAnimations.Contains(flags.nowAnimStateName))
-                {
-                    newState = OnOrgasm;
-                }
-                else if (insertAnimations.Contains(flags.nowAnimStateName))
-                {
-                    newState = OnInsert;
-                }
-                else
-                {
-                    newState = OnForeplay;
-                }
+                var newState = GetSexFaceDisplayAction(flags, hand);
                 if (currentState != newState)
                 {
                     currentState = newState;
@@ -110,6 +103,16 @@ namespace SexFaces
             }
             Hooks.FacialExpressionLock.Unlock(ChaControl);
             Hooks.EyeDirectionLock.Unlock(ChaControl);
+        }
+
+        private Action<SaveData.Heroine.HExperienceKind> GetSexFaceDisplayAction(HFlag flags,
+            HandCtrl hand)
+        {
+            return (hand?.IsKissAction() ?? false) ? OnKiss
+                : houshiModes.Contains(flags.mode) ? OnService
+                : orgAnimations.Contains(flags.nowAnimStateName) ? OnOrgasm
+                : insertAnimations.Contains(flags.nowAnimStateName) ? OnInsert
+                : (Action<SaveData.Heroine.HExperienceKind>)OnForeplay;
         }
 
         protected override void OnCardBeingSaved(GameMode currentGameMode)

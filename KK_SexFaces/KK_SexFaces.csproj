@@ -44,6 +44,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CharaExtensions.cs" />
     <Compile Include="ExpressionPresets.cs" />
     <Compile Include="FacialExpression.cs" />
     <Compile Include="GameController.cs" />

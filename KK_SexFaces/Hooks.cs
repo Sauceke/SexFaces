@@ -1,12 +1,12 @@
 ﻿using HarmonyLib;
 using KKAPI.Studio;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SexFaces
 {
     internal static class Hooks
     {
-
         public static void InstallHooks()
         {
             if (!StudioAPI.InsideStudio)
@@ -18,6 +18,7 @@ namespace SexFaces
 
         public static class FacialExpressionLock
         {
+            private static readonly int[] exemptMouthPatterns = { 21, 22, 23 }; // lick, suck, kiss
             private static HashSet<ChaControl> lockedControls = new HashSet<ChaControl>();
 
             public static void Lock(ChaControl control)
@@ -37,11 +38,17 @@ namespace SexFaces
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeEyesOpenMax))]
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeEyesBlinkFlag))]
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeLookEyesPtn))]
-            [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeMouthPtn))]
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeMouthOpenMax))]
-            private static bool CanExecute(ChaControl __instance)
+            private static bool CanChange(ChaControl __instance)
             {
                 return !lockedControls.Contains(__instance);
+            }
+
+            [HarmonyPrefix]
+            [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeMouthPtn))]
+            private static bool CanChangeMouth(ChaControl __instance, int ptn)
+            {
+                return exemptMouthPatterns.Contains(ptn) || !lockedControls.Contains(__instance);
             }
         }
 
