@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Xml.Serialization;
 using UnityEngine;
 
 namespace SexFaces
 {
-    public class FacialExpression
+    public partial class FacialExpression
     {
         public string EyebrowExpression { get; set; }
         public float EyebrowOpenMax { get; set; }
@@ -23,27 +21,6 @@ namespace SexFaces
         public float LeftEyeScaleY { get; set; } = 1f;
         public float RightEyeScaleX { get; set; } = 1f;
         public float RightEyeScaleY { get; set; } = 1f;
-
-        public string Serialize()
-        {
-            using (StringWriter writer = new StringWriter())
-            {
-                new XmlSerializer(typeof(FacialExpression)).Serialize(writer, this);
-                return writer.ToString();
-            }
-        }
-
-        public static FacialExpression Deserialize(string blob)
-        {
-            if (blob == null)
-            {
-                return null;
-            }
-            using (StringReader reader = new StringReader(blob))
-            {
-                return (FacialExpression)new XmlSerializer(typeof(FacialExpression)).Deserialize(reader);
-            }
-        }
 
         public static FacialExpression Capture(ChaControl chaControl)
         {
