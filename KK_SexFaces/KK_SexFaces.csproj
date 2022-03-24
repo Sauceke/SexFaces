@@ -45,12 +45,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CharaExtensions.cs" />
+    <Compile Include="ConfigurationManagerAttributes.cs" />
     <Compile Include="ExpressionPresets.cs" />
     <Compile Include="FacialExpression.cs" />
     <Compile Include="FacialExpressionSerde.cs" />
     <Compile Include="GameController.cs" />
     <Compile Include="Hooks.cs" />
     <Compile Include="FBSExtensions.cs" />
+    <Compile Include="RangeSlider.cs" />
     <Compile Include="SexFacesController.cs" />
     <Compile Include="SexFacesGui.cs" />
     <Compile Include="SexFacesPlugin.cs" />

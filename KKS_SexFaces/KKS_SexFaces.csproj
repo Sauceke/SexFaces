@@ -50,6 +50,9 @@
     <Compile Include="..\KK_SexFaces\CharaExtensions.cs">
       <Link>CharaExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\KK_SexFaces\ConfigurationManagerAttributes.cs">
+      <Link>ConfigurationManagerAttributes.cs</Link>
+    </Compile>
     <Compile Include="..\KK_SexFaces\ExpressionPresets.cs">
       <Link>ExpressionPresets.cs</Link>
     </Compile>
@@ -67,6 +70,9 @@
     </Compile>
     <Compile Include="..\KK_SexFaces\Hooks.cs">
       <Link>Hooks.cs</Link>
+    </Compile>
+    <Compile Include="..\KK_SexFaces\RangeSlider.cs">
+      <Link>RangeSlider.cs</Link>
     </Compile>
     <Compile Include="..\KK_SexFaces\SexFacesController.cs">
       <Link>SexFacesController.cs</Link>

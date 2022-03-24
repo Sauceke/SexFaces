@@ -103,7 +103,8 @@ namespace SexFaces
                 else if (stopwatch.Elapsed.TotalSeconds > switchTimeSecs)
                 {
                     currentState(experience);
-                    switchTimeSecs = random.Next(5, 20);
+                    switchTimeSecs = random.Next(SexFacesPlugin.MinSwitchTimeSecs.Value,
+                        SexFacesPlugin.MaxSwitchTimeSecs.Value);
                     stopwatch.Reset();
                     stopwatch.Start();
                 }
@@ -330,7 +331,8 @@ namespace SexFaces
         {
             if (version > 1)
             {
-                string msg = "Character data uses a later version of SexFaces. Please update the SexFaces plugin.";
+                string msg = "Character data uses a later version of SexFaces. " +
+                    "Please update the SexFaces plugin.";
                 SexFacesPlugin.Logger.LogMessage(msg);
                 throw new ArgumentOutOfRangeException(msg);
             }
