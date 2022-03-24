@@ -241,7 +241,7 @@ namespace SexFaces
             };
             if (face.MouthOpenMax < 0.5f)
             {
-                SexFacesGui.OfferSaveWithOpenMouth(
+                SexFacesGui.Instance.OfferSaveWithOpenMouth(
                     onYes: _ => SaveFaceWithOpenMouth(faceEntry),
                     onNo: _ => SaveFace(faceEntry));
                 return;
@@ -253,7 +253,7 @@ namespace SexFaces
         {
             sexFaces.Add(faceEntry);
             PreviewSexFace(faceEntry.Trigger, faceEntry.Experience, faceEntry.Slot);
-            SexFacesGui.RefreshFaceList();
+            SexFacesGui.Instance.RefreshFaceList();
         }
 
         private void SaveFaceWithOpenMouth(SexFaceEntry faceEntry)

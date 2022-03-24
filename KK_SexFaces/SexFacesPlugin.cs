@@ -20,7 +20,7 @@ namespace SexFaces
             Hooks.InstallHooks();
             GameAPI.RegisterExtraBehaviour<GameController>(GUID);
             CharacterApi.RegisterExtraBehaviour<SexFacesController>(GUID);
-            SexFacesGui.Init(this);
+            SexFacesGui.Instance.Init(this);
         }
     }
 }

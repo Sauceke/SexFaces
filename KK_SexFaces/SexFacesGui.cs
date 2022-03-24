@@ -12,41 +12,46 @@ using UnityEngine.UI;
 
 namespace SexFaces
 {
-    internal static class SexFacesGui
+    internal class SexFacesGui
     {
-        public static readonly string[] TRIGGER_DESCRIPTIONS =
+        public static readonly SexFacesGui Instance = new SexFacesGui();
+        public static readonly string[] TriggerDescriptions =
             { "Foreplay", "Penetration", "Orgasm" };
-        public static readonly string[] EXP_DESCRIPTIONS =
+        public static readonly string[] ExperienceDescriptions =
             { "First Time", "Amateur", "Pro", "Lewd" };
         private static readonly ColorBlock selectedButtonColors = new ColorBlock
         {
-            normalColor = new Color(1f, 0.5f, 0f),
-            highlightedColor = new Color(1f, 0.5f, 0f),
-            pressedColor = new Color(1f, 0.5f, 0f),
-            disabledColor = new Color(1f, 0.5f, 0f),
+            normalColor = Color.yellow,
+            highlightedColor = Color.yellow,
+            pressedColor = Color.yellow,
+            disabledColor = Color.yellow,
             colorMultiplier = 1f
         };
-        private static readonly ColorBlock defaultButtonColors = ColorBlock.defaultColorBlock;
 
-        private static SexFacesController Controller =>
+        private SexFacesController Controller =>
             MakerAPI.GetCharacterControl().gameObject.GetComponent<SexFacesController>();
 
-        private static CustomCheckWindow CheckWindow =>
+        private CustomCheckWindow CheckWindow =>
             UnityEngine.Object.FindObjectOfType<CustomCharaFile>().checkWindow;
 
-        private static MakerRadioButtons triggerButtons;
+        private ColorBlock DefaultButtonColors =>
+            deleteButton.ControlObject.GetComponentInChildren<Button>().colors;
 
-        private static MakerRadioButtons experienceButtons;
+        private MakerRadioButtons triggerButtons;
 
-        private static MakerButton deleteButton;
+        private MakerRadioButtons experienceButtons;
 
-        private static MakerText faceListHeader;
+        private MakerButton deleteButton;
 
-        private static MakerButton[] faceButtons;
+        private MakerText faceListHeader;
 
-        private static int selectedFaceSlot = -1;
+        private MakerButton[] faceButtons;
 
-        public static void Init(SexFacesPlugin plugin)
+        private int selectedFaceSlot = -1;
+
+        private SexFacesGui() { }
+
+        public void Init(SexFacesPlugin plugin)
         {
             MakerAPI.RegisterCustomSubCategories +=
                 (sender, args) => RegisterMakerControls(plugin, args);
@@ -54,9 +59,10 @@ namespace SexFaces
                 (sender, args) => RefreshFaceList();
         }
 
-        private static void RegisterMakerControls(SexFacesPlugin plugin, RegisterSubCategoriesEvent e)
+        private void RegisterMakerControls(SexFacesPlugin plugin, RegisterSubCategoriesEvent e)
         {
-            var cat = new MakerCategory(MakerConstants.Parameter.Character.CategoryName, "Sex Faces");
+            var cat = new MakerCategory(MakerConstants.Parameter.Character.CategoryName,
+                "Sex Faces");
             e.AddSubCategory(cat);
             e.AddControl(new MakerText(
                 "Set the facial expression using the sidebar.\n" +
@@ -64,9 +70,9 @@ namespace SexFaces
                 cat, plugin))
                 .TextColor = Color.magenta;
             triggerButtons = e.AddControl(
-                new MakerRadioButtons(cat, plugin, "Show during:", TRIGGER_DESCRIPTIONS));
+                new MakerRadioButtons(cat, plugin, "Show during:", TriggerDescriptions));
             experienceButtons = e.AddControl(
-                new MakerRadioButtons(cat, plugin, "Experience:", EXP_DESCRIPTIONS));
+                new MakerRadioButtons(cat, plugin, "Experience:", ExperienceDescriptions));
             triggerButtons.ValueChanged.Subscribe(_ => RefreshFaceList());
             experienceButtons.ValueChanged.Subscribe(_ => RefreshFaceList());
             e.AddControl(new MakerButton("Add Current Face", cat, plugin))
@@ -116,19 +122,29 @@ namespace SexFaces
                 .ValueChanged.Subscribe(Controller.ChangeRightIrisScale);
         }
 
-        private static void AddCurrentFace()
-        {
-            Controller.AddCurrentFace((SexFacesController.Trigger)triggerButtons.Value,
-                    (SaveData.Heroine.HExperienceKind)experienceButtons.Value);
-        }
-
-        public static void RefreshFaceList()
+        private void AddCurrentFace()
         {
             var trigger = (SexFacesController.Trigger)triggerButtons.Value;
             var experience = (SaveData.Heroine.HExperienceKind)experienceButtons.Value;
-            var experienceStr = EXP_DESCRIPTIONS[experienceButtons.Value];
             int slots = Controller.GetSlotCount(trigger, experience);
-            faceListHeader.Text = slots > 0 ? $"Faces for {trigger}, {experienceStr}:" : "";
+            if (slots >= faceButtons.Length)
+            {
+                SexFacesPlugin.Logger.LogMessage(
+                    $"Only {faceButtons.Length} faces allowed for each condition.");
+                Utils.Sound.Play(SystemSE.cancel);
+                return;
+            }
+            Controller.AddCurrentFace(trigger, experience);
+        }
+
+        public void RefreshFaceList()
+        {
+            var trigger = (SexFacesController.Trigger)triggerButtons.Value;
+            var experience = (SaveData.Heroine.HExperienceKind)experienceButtons.Value;
+            int slots = Controller.GetSlotCount(trigger, experience);
+            var triggerStr = TriggerDescriptions[triggerButtons.Value];
+            var experienceStr = ExperienceDescriptions[experienceButtons.Value];
+            faceListHeader.Text = slots > 0 ? $"Faces for {experienceStr} {triggerStr}:" : "";
             for (int i = 0; i < faceButtons.Length; i++)
             {
                 if (faceButtons[i].ControlObject == null)
@@ -138,31 +154,32 @@ namespace SexFaces
                 faceButtons[i].ControlObject.SetActive(i < slots);
             }
             ResetFaceButtonColors();
-            deleteButton.ControlObject.GetComponentInChildren<Button>().enabled = slots > 0;
             selectedFaceSlot = -1;
         }
 
-        private static void OnFaceButtonClicked(int index)
+        private void OnFaceButtonClicked(int index)
         {
             Controller.PreviewSexFace(
                     (SexFacesController.Trigger)triggerButtons.Value,
                     (SaveData.Heroine.HExperienceKind)experienceButtons.Value,
                     slot: index);
             ResetFaceButtonColors();
-            faceButtons[index].ControlObject.GetComponentInChildren<Button>().colors =
-                selectedButtonColors;
+            faceButtons[index].ControlObject.GetComponentInChildren<Button>().colors
+                = selectedButtonColors;
+            faceButtons[index].ControlObject.GetComponentInChildren<Button>().transition
+                = Selectable.Transition.ColorTint;
             selectedFaceSlot = index;
         }
 
-        private static void ResetFaceButtonColors()
+        private void ResetFaceButtonColors()
         {
             foreach (var btn in faceButtons)
             {
-                btn.ControlObject.GetComponentInChildren<Button>().colors = defaultButtonColors;
+                btn.ControlObject.GetComponentInChildren<Button>().colors = DefaultButtonColors;
             }
         }
 
-        public static void OfferSaveWithOpenMouth(Action<string> onYes, Action<string> onNo)
+        public void OfferSaveWithOpenMouth(Action<string> onYes, Action<string> onNo)
         {
             Utils.Sound.Play(SystemSE.window_o);
             CheckWindow.Setup(CustomCheckWindow.CheckType.YesNo,
@@ -171,8 +188,14 @@ namespace SexFaces
                     onYes, onNo);
         }
 
-        private static void ConfirmDeleteFace()
+        private void ConfirmDeleteFace()
         {
+            if (selectedFaceSlot < 0)
+            {
+                SexFacesPlugin.Logger.LogMessage("No face selected to delete.");
+                Utils.Sound.Play(SystemSE.cancel);
+                return;
+            }
             Utils.Sound.Play(SystemSE.window_o);
             CheckWindow.Setup(CustomCheckWindow.CheckType.YesNo,
                     $"Delete face #{selectedFaceSlot + 1}?",
@@ -180,7 +203,7 @@ namespace SexFaces
                     _ => DeleteFace(), _ => { });
         }
 
-        private static void DeleteFace()
+        private void DeleteFace()
         {
             Controller.DeleteFace((SexFacesController.Trigger)triggerButtons.Value,
                     (SaveData.Heroine.HExperienceKind)experienceButtons.Value,
