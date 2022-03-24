@@ -6,18 +6,15 @@ using KKAPI.Maker;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace SexFaces
 {
     internal class SexFacesController : CharaCustomFunctionController
     {
-        public static readonly string[] Triggers =
-        {
-            nameof(OnForeplay), nameof(OnInsert), nameof(OnOrgasm)
-        };
-
         private static readonly string[] insertAnimations =
         {
             "Insert", "A_Insert",
@@ -39,27 +36,28 @@ namespace SexFaces
             HFlag.EMode.houshi, HFlag.EMode.houshi3P, HFlag.EMode.houshi3PMMF
         };
 
-        public Dictionary<string, FacialExpression> SexFaces { get; } =
-            new Dictionary<string, FacialExpression>();
+        private HashSet<SexFaceEntry> sexFaces = new HashSet<SexFaceEntry>();
+
+        private System.Random random = new System.Random();
 
         private IEnumerator PatchFaces()
         {
             // TODO: why the fuck does this not work immediately
             yield return new WaitForSecondsRealtime(1);
-            PatchPatternForAhegao(2, newPtnIndex: 43);
-            PatchPatternForAhegao(11, newPtnIndex: 44);
-            PatchPatternForAhegao(39, newPtnIndex: 45);
-            PatchPatternForLopsided(12, leanRight: false, newPtnIndex: 46);
-            PatchPatternForLopsided(12, leanRight: true, newPtnIndex: 47);
-            PatchPatternForLopsided(27, leanRight: false, newPtnIndex: 48);
-            PatchPatternForLopsided(27, leanRight: true, newPtnIndex: 49);
-            PatchPatternForLopsided(28, leanRight: false, newPtnIndex: 50);
-            PatchPatternForLopsided(28, leanRight: true, newPtnIndex: 51);
+            ChaControl.mouthCtrl.PatchPatternForAhegao(2, newPtnIndex: 43);
+            ChaControl.mouthCtrl.PatchPatternForAhegao(11, newPtnIndex: 44);
+            ChaControl.mouthCtrl.PatchPatternForAhegao(39, newPtnIndex: 45);
+            ChaControl.mouthCtrl.PatchPatternForLopsided(12, leanRight: false, newPtnIndex: 46);
+            ChaControl.mouthCtrl.PatchPatternForLopsided(12, leanRight: true, newPtnIndex: 47);
+            ChaControl.mouthCtrl.PatchPatternForLopsided(27, leanRight: false, newPtnIndex: 48);
+            ChaControl.mouthCtrl.PatchPatternForLopsided(27, leanRight: true, newPtnIndex: 49);
+            ChaControl.mouthCtrl.PatchPatternForLopsided(28, leanRight: false, newPtnIndex: 50);
+            ChaControl.mouthCtrl.PatchPatternForLopsided(28, leanRight: true, newPtnIndex: 51);
         }
 
         private void OnForeplay(SaveData.Heroine.HExperienceKind experience)
         {
-            ApplySexFace(GetSexFaceId(nameof(OnForeplay), experience));
+            ApplyRandomSexFace(Trigger.OnForeplay, experience);
         }
 
         private void OnService(SaveData.Heroine.HExperienceKind experience)
@@ -71,12 +69,12 @@ namespace SexFaces
 
         private void OnInsert(SaveData.Heroine.HExperienceKind experience)
         {
-            ApplySexFace(GetSexFaceId(nameof(OnInsert), experience));
+            ApplyRandomSexFace(Trigger.OnInsert, experience);
         }
 
         private void OnOrgasm(SaveData.Heroine.HExperienceKind experience)
         {
-            ApplySexFace(GetSexFaceId(nameof(OnOrgasm), experience));
+            ApplyRandomSexFace(Trigger.OnOrgasm, experience);
         }
 
         internal void RunLoop(HFlag flags, SaveData.Heroine.HExperienceKind experience,
@@ -91,6 +89,9 @@ namespace SexFaces
         {
             Action<SaveData.Heroine.HExperienceKind> currentState = OnForeplay;
             OnForeplay(experience);
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var switchTimeSecs = 0;
             while (!flags.isHSceneEnd)
             {
                 var newState = GetSexFaceDisplayAction(flags, hand);
@@ -98,6 +99,13 @@ namespace SexFaces
                 {
                     currentState = newState;
                     newState(experience);
+                }
+                else if (stopwatch.Elapsed.TotalSeconds > switchTimeSecs)
+                {
+                    currentState(experience);
+                    switchTimeSecs = random.Next(5, 20);
+                    stopwatch.Reset();
+                    stopwatch.Start();
                 }
                 yield return new WaitForSecondsRealtime(0.2f);
             }
@@ -122,9 +130,10 @@ namespace SexFaces
                 return;
             }
             var data = new PluginData();
-            foreach (var entry in SexFaces)
+            data.version = 1;
+            foreach (var entry in sexFaces)
             {
-                data.data[entry.Key] = entry.Value.Serialize();
+                data.data[GetSexFaceId(entry)] = entry.Face.Serialize();
             }
             SetExtendedData(data);
         }
@@ -138,17 +147,25 @@ namespace SexFaces
             StartCoroutine(PatchFaces());
             if (!MakerAPI.InsideAndLoaded || MakerAPI.GetCharacterLoadFlags().Parameters)
             {
-                SexFaces.Clear();
+                sexFaces.Clear();
                 var data = GetExtendedData();
-                if (data != null)
+                if (data == null)
                 {
-                    foreach (string id in GetAllSexFaceIds())
+                    return;
+                }
+                foreach (var kvp in data.data)
+                {
+                    ParseSexFaceId(data.version, kvp.Key, out var trigger, out var experience,
+                        out int slot);
+                    var face = FacialExpression.Deserialize((string)kvp.Value);
+                    var faceEntry = new SexFaceEntry
                     {
-                        if (data.data.TryGetValue(id, out var value))
-                        {
-                            SexFaces[id] = FacialExpression.Deserialize((string)value);
-                        }
-                    }
+                        Trigger = trigger,
+                        Experience = experience,
+                        Slot = slot,
+                        Face = face
+                    };
+                    sexFaces.Add(faceEntry);
                 }
             }
         }
@@ -211,63 +228,92 @@ namespace SexFaces
                 ExpressionPresets.mouthExpressions.Values.ElementAt(index), false);
         }
 
-        internal void RegisterCurrent(string trigger, SaveData.Heroine.HExperienceKind experience)
+        internal void AddCurrentFace(Trigger trigger, SaveData.Heroine.HExperienceKind experience)
         {
             var face = FacialExpression.Capture(MakerAPI.GetCharacterControl());
+            var slot = GetSlotCount(trigger, experience);
+            var faceEntry = new SexFaceEntry
+            {
+                Trigger = trigger,
+                Experience = experience,
+                Slot = slot,
+                Face = face
+            };
             if (face.MouthOpenMax < 0.5f)
             {
-                SexFacesGui.OfferSaveWithOpenMouth(
-                    onYes: _ => SaveFaceWithOpenMouth(face, trigger, experience),
-                    onNo: _ => SaveFace(face, trigger, experience));
+                SexFacesGui.Instance.OfferSaveWithOpenMouth(
+                    onYes: _ => SaveFaceWithOpenMouth(faceEntry),
+                    onNo: _ => SaveFace(faceEntry));
                 return;
             }
-            SaveFace(face, trigger, experience);
+            SaveFace(faceEntry);
         }
 
-        private void SaveFace(FacialExpression face, string trigger,
-            SaveData.Heroine.HExperienceKind experience)
+        private void SaveFace(SexFaceEntry faceEntry)
         {
-            SexFaces[GetSexFaceId(trigger, experience)] = face;
-            PreviewSexFace(trigger, experience);
+            sexFaces.Add(faceEntry);
+            PreviewSexFace(faceEntry.Trigger, faceEntry.Experience, faceEntry.Slot);
+            SexFacesGui.Instance.RefreshFaceList();
         }
 
-        private void SaveFaceWithOpenMouth(FacialExpression face, string trigger,
-            SaveData.Heroine.HExperienceKind experience)
+        private void SaveFaceWithOpenMouth(SexFaceEntry faceEntry)
         {
-            face.MouthOpenMax = 1f;
-            SaveFace(face, trigger, experience);
+            faceEntry.Face.MouthOpenMax = 1f;
+            SaveFace(faceEntry);
         }
 
-        internal void PreviewSexFace(string trigger, SaveData.Heroine.HExperienceKind experience)
+        internal void DeleteFace(Trigger trigger, SaveData.Heroine.HExperienceKind experience,
+            int slot)
+        {
+            sexFaces = new HashSet<SexFaceEntry>(sexFaces.Where(sf => sf.Trigger != trigger
+                || sf.Experience != experience || sf.Slot != slot));
+            foreach (var faceEntry in sexFaces)
+            {
+                if (faceEntry.Trigger == trigger && faceEntry.Experience == experience
+                    && faceEntry.Slot > slot)
+                {
+                    faceEntry.Slot--;
+                }
+            }
+        }
+
+        internal int GetSlotCount(Trigger trigger, SaveData.Heroine.HExperienceKind experience) =>
+            sexFaces
+                .Where(sf => sf.Trigger == trigger && sf.Experience == experience)
+                .Count();
+
+        internal void PreviewSexFace(Trigger trigger, SaveData.Heroine.HExperienceKind experience,
+            int slot)
         {
             Hooks.FacialExpressionLock.Unlock(ChaControl);
             Hooks.EyeDirectionLock.Unlock(ChaControl);
-            if (!SexFaces.TryGetValue(GetSexFaceId(trigger, experience), out var face))
+            var face = sexFaces
+                .Where(sf => sf.Trigger == trigger && sf.Experience == experience
+                    && sf.Slot == slot)
+                .FirstOrDefault();
+            if (face == null)
             {
                 Utils.Sound.Play(SystemSE.cancel);
                 return;
             }
-            face.Apply(ChaControl);
+            face.Face.Apply(ChaControl);
             Utils.Sound.Play(SystemSE.sel);
         }
 
-        private static IEnumerable<string> GetAllSexFaceIds()
-        {
-            return from trigger in Triggers
-                   from experience in Enum.GetValues(typeof(SaveData.Heroine.HExperienceKind))
-                        .Cast<SaveData.Heroine.HExperienceKind>()
-                   select GetSexFaceId(trigger, experience);
-        }
-
-        private void ApplySexFace(string id)
+        private void ApplyRandomSexFace(Trigger trigger,
+            SaveData.Heroine.HExperienceKind experience)
         {
             Hooks.FacialExpressionLock.Unlock(ChaControl);
             Hooks.EyeDirectionLock.Unlock(ChaControl);
-            if (!SexFaces.TryGetValue(id, out var face))
+            var facePool = sexFaces
+                .Where(sf => sf.Trigger == trigger && sf.Experience == experience);
+            if (facePool.Count() == 0)
             {
                 ResetIrisScales();
                 return;
             }
+            var index = random.Next(facePool.Count());
+            var face = facePool.Skip(index).First().Face;
             face.Apply(ChaControl);
             Hooks.FacialExpressionLock.Lock(ChaControl);
             if (face.EyesTargetPos != null)
@@ -276,93 +322,37 @@ namespace SexFaces
             }
         }
 
-        private static string GetSexFaceId(string trigger,
-            SaveData.Heroine.HExperienceKind experience)
-        {
-            return "sexFace(" + trigger + "," + (int)experience + ")";
-        }
+        private static string GetSexFaceId(SexFaceEntry faceEntry)
+            => $"sexFace({faceEntry.Trigger},{(int)faceEntry.Experience},{faceEntry.Slot})";
 
-        private void PatchPatternForAhegao(int ptnIndex, int newPtnIndex)
+        private static void ParseSexFaceId(int version, string id, out Trigger trigger,
+            out SaveData.Heroine.HExperienceKind experience, out int slot)
         {
-            var mouthCtrl = ChaControl.mouthCtrl;
-            for (int fbsIndex = 0; fbsIndex < mouthCtrl.FBSTarget.Length; fbsIndex++)
+            if (version > 1)
             {
-                var fbs = mouthCtrl.FBSTarget[fbsIndex];
-                if (newPtnIndex >= fbs.PtnSet.Length)
-                {
-                    Array.Resize(ref fbs.PtnSet, newPtnIndex + 1);
-                    for (int i = 0; i < fbs.PtnSet.Length; i++)
-                    {
-                        fbs.PtnSet[i] = fbs.PtnSet[i] ?? new FBSTargetInfo.CloseOpen();
-                    }
-                }
-                // tongue out (24) for the tongue controller (4), leave everything else as is
-                int ptn = fbsIndex == 4 ? fbs.PtnSet[24].Open : fbs.PtnSet[ptnIndex].Open;
-                fbs.PtnSet[newPtnIndex].Open = ptn;
-                fbs.PtnSet[newPtnIndex].Close = ptn;
+                string msg = "Character data uses a later version of SexFaces. Please update the SexFaces plugin.";
+                SexFacesPlugin.Logger.LogMessage(msg);
+                throw new ArgumentOutOfRangeException(msg);
             }
+            string idPattern = version == 0 ? @"^sexFace\(([a-zA-Z]+),([0-3])\)$"
+                : @"^sexFace\(([a-zA-Z]+),([0-3]),([0-9]+)\)$";
+            var match = Regex.Match(id, idPattern);
+            trigger = (Trigger)Enum.Parse(typeof(Trigger), match.Groups[1].Value);
+            experience = (SaveData.Heroine.HExperienceKind)int.Parse(match.Groups[2].Value);
+            slot = version == 0 ? 0 : int.Parse(match.Groups[3].Value);
         }
 
-        private void PatchPatternForLopsided(int ptnIndex, bool leanRight, int newPtnIndex)
+        public enum Trigger
         {
-            var mouthCtrl = ChaControl.mouthCtrl;
-            for (int fbsIndex = 0; fbsIndex < mouthCtrl.FBSTarget.Length; fbsIndex++)
-            {
-                var fbs = mouthCtrl.FBSTarget[fbsIndex];
-                if (newPtnIndex >= fbs.PtnSet.Length)
-                {
-                    Array.Resize(ref fbs.PtnSet, newPtnIndex + 1);
-                    for (int i = 0; i < fbs.PtnSet.Length; i++)
-                    {
-                        fbs.PtnSet[i] = fbs.PtnSet[i] ?? new FBSTargetInfo.CloseOpen();
-                    }
-                }
-                var meshCtrl = fbs.GetSkinnedMeshRenderer();
-                var mesh = meshCtrl.sharedMesh;
-                int vertCount = mesh.vertexCount;
-                var deltaVertsOpen = new Vector3[vertCount];
-                var deltaVertsClosed = new Vector3[vertCount];
-                var deltaNorms = new Vector3[vertCount];
-                var deltaTans = new Vector3[vertCount];
-                float halfWidth = mesh.vertices.Max(_ => _.x);
-                int openPtn = fbs.PtnSet[ptnIndex].Open;
-                int closedPtn = fbs.PtnSet[ptnIndex].Close;
-                mesh.GetBlendShapeFrameVertices(openPtn, 0, deltaVertsOpen, deltaNorms, deltaTans);
-                mesh.GetBlendShapeFrameVertices(closedPtn, 0, deltaVertsClosed, deltaNorms,
-                    deltaTans);
-                var deltaVertsLopsided = new Vector3[vertCount];
-                for (int i = 0; i < vertCount; i++)
-                {
-                    float relativeX = Mathf.InverseLerp(-halfWidth, halfWidth, mesh.vertices[i].x);
-                    float blend = Sigmoid(relativeX);
-                    if (leanRight)
-                    {
-                        blend = 1f - blend;
-                    }
-                    deltaVertsLopsided[i] = deltaVertsClosed[i] * blend
-                        + deltaVertsOpen[i] * (1f - blend);
-                }
-                string name = "sexfaces.lopsided." + (leanRight ? "right." : "left.")
-                    + mesh.GetBlendShapeName(fbs.PtnSet[ptnIndex].Close);
-                try
-                {
-                    mesh.AddBlendShapeFrame(name, 1f, deltaVertsLopsided, deltaNorms, deltaTans);
-                }
-                catch (ArgumentException)
-                {
-                    // not noteworthy, just means we have already patched this pattern
-                }
-                int index = mesh.GetBlendShapeIndex(name);
-                fbs.PtnSet[newPtnIndex].Open = index;
-                fbs.PtnSet[newPtnIndex].Close = fbs.PtnSet[ptnIndex].Close;
-                // this looks stupid but we need to tell unity the mesh was modified
-                meshCtrl.sharedMesh = meshCtrl.sharedMesh;
-            }
+            OnForeplay, OnInsert, OnOrgasm
         }
 
-        private float Sigmoid(float x)
+        public class SexFaceEntry
         {
-            return (float)(Math.Tanh((x - 0.5) * 10) + 1) / 2f;
+            public Trigger Trigger { get; set; }
+            public SaveData.Heroine.HExperienceKind Experience { get; set; }
+            public int Slot { get; set; }
+            public FacialExpression Face { get; set; }
         }
     }
 }

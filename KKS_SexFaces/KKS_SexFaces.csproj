@@ -56,6 +56,12 @@
     <Compile Include="..\KK_SexFaces\FacialExpression.cs">
       <Link>FacialExpression.cs</Link>
     </Compile>
+    <Compile Include="..\KK_SexFaces\FacialExpressionSerde.cs">
+      <Link>FacialExpressionSerde.cs</Link>
+    </Compile>
+    <Compile Include="..\KK_SexFaces\FBSExtensions.cs">
+      <Link>FBSExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\KK_SexFaces\GameController.cs">
       <Link>GameController.cs</Link>
     </Compile>
