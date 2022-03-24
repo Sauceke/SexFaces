@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace SexFaces
 {
-    public class ExpressionPresets
+    internal static class ExpressionPresets
     {
-        public static Dictionary<string, Dictionary<int, float>> eyebrowExpressions =
+        private static readonly Dictionary<string, Dictionary<int, float>> eyebrowExpressions =
             new Dictionary<string, Dictionary<int, float>>
         {
             {
@@ -59,7 +60,7 @@ namespace SexFaces
             }
         };
 
-        public static Dictionary<string, Dictionary<int, float>> eyeExpressions =
+        private static readonly Dictionary<string, Dictionary<int, float>> eyeExpressions =
             new Dictionary<string, Dictionary<int, float>> {
             {
                 "Default",
@@ -133,7 +134,7 @@ namespace SexFaces
             },
         };
 
-        public static Dictionary<string, Dictionary<int, float>> mouthExpressions =
+        private static readonly Dictionary<string, Dictionary<int, float>> mouthExpressions =
             new Dictionary<string, Dictionary<int, float>> {
             {
                 "Default",
@@ -286,5 +287,19 @@ namespace SexFaces
                 }
             }
         };
+
+        internal static string[] EyebrowExpressionNames => eyebrowExpressions.Keys.ToArray();
+        internal static string[] EyeExpressionNames => eyeExpressions.Keys.ToArray();
+        internal static string[] MouthExpressionNames => mouthExpressions.Keys.ToArray();
+
+        // cloning these because KKS doesn't bother to
+        internal static Dictionary<int, float> GetEyebrowExpression(int index) =>
+            new Dictionary<int, float>(eyebrowExpressions.ElementAt(index).Value);
+
+        internal static Dictionary<int, float> GetEyeExpression(int index) =>
+            new Dictionary<int, float>(eyeExpressions.ElementAt(index).Value);
+
+        internal static Dictionary<int, float> GetMouthExpression(int index) =>
+            new Dictionary<int, float>(mouthExpressions.ElementAt(index).Value);
     }
 }

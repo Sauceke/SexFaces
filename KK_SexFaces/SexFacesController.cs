@@ -213,20 +213,17 @@ namespace SexFaces
 
         internal void ApplyEyebrowPreset(int index)
         {
-            ChaControl.eyebrowCtrl.ChangeFace(
-                ExpressionPresets.eyebrowExpressions.Values.ElementAt(index), false);
+            ChaControl.eyebrowCtrl.ChangeFace(ExpressionPresets.GetEyebrowExpression(index), false);
         }
 
         internal void ApplyEyePreset(int index)
         {
-            ChaControl.eyesCtrl.ChangeFace(
-                ExpressionPresets.eyeExpressions.Values.ElementAt(index), false);
+            ChaControl.eyesCtrl.ChangeFace(ExpressionPresets.GetEyeExpression(index), false);
         }
 
         internal void ApplyMouthPreset(int index)
         {
-            ChaControl.mouthCtrl.ChangeFace(
-                ExpressionPresets.mouthExpressions.Values.ElementAt(index), false);
+            ChaControl.mouthCtrl.ChangeFace(ExpressionPresets.GetMouthExpression(index), false);
         }
 
         internal void AddCurrentFace(Trigger trigger, SaveData.Heroine.HExperienceKind experience)

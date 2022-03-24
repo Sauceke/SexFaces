@@ -95,13 +95,13 @@ namespace SexFaces
             e.AddControl(new MakerSeparator(cat, plugin));
             e.AddControl(new MakerText("Extra Expression Controls", cat, plugin));
             e.AddControl(new MakerDropdown("Extra Eyebrow Expressions",
-                GetDictKeys(ExpressionPresets.eyebrowExpressions), cat, 0, plugin))
+                ExpressionPresets.EyebrowExpressionNames, cat, 0, plugin))
                 .ValueChanged.Subscribe(Controller.ApplyEyebrowPreset);
             e.AddControl(new MakerDropdown("Extra Eye Expressions",
-                GetDictKeys(ExpressionPresets.eyeExpressions), cat, 0, plugin))
+                ExpressionPresets.EyeExpressionNames, cat, 0, plugin))
                 .ValueChanged.Subscribe(Controller.ApplyEyePreset);
             e.AddControl(new MakerDropdown("Extra Mouth Expressions",
-                GetDictKeys(ExpressionPresets.mouthExpressions), cat, 0, plugin))
+                ExpressionPresets.MouthExpressionNames, cat, 0, plugin))
                 .ValueChanged.Subscribe(Controller.ApplyMouthPreset);
             e.AddControl(new MakerSlider(cat, "Eyebrow Limit", 0, 1, 1, plugin))
                 .ValueChanged.Subscribe(Controller.ChaControl.ChangeEyebrowOpenMax);
@@ -209,13 +209,6 @@ namespace SexFaces
                     (SaveData.Heroine.HExperienceKind)experienceButtons.Value,
                     selectedFaceSlot);
             RefreshFaceList();
-        }
-
-        private static string[] GetDictKeys(IDictionary dict)
-        {
-            string[] keys = new string[dict.Keys.Count];
-            dict.Keys.CopyTo(keys, 0);
-            return keys;
         }
     }
 }
