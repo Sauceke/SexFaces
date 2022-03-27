@@ -9,7 +9,6 @@ on:
 
 jobs:
   release:
-
     runs-on: windows-2019
     
     env:
@@ -32,8 +31,10 @@ jobs:
       run: msbuild SexFaces.sln /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile /p:Version=${{ github.event.inputs.version }}
 
     - name: Zip artifacts
-      run: powershell Compress-Archive -Path bin/SexFaces.KK/BepInEx -DestinationPath KK_SexFaces.zip
-      run: powershell Compress-Archive -Path bin/SexFaces.KKS/BepInEx -DestinationPath KKS_SexFaces.zip
+      run: |
+        mkdir assets
+        powershell Compress-Archive -Path bin/SexFaces.KK/BepInEx -DestinationPath assets/KK_SexFaces.zip
+        powershell Compress-Archive -Path bin/SexFaces.KKS/BepInEx -DestinationPath assets/KKS_SexFaces.zip
 
     - name: Create Release
       id: create_release
@@ -47,12 +48,11 @@ jobs:
         draft: true
         prerelease: false
         
-    - name: Upload Koikatsu Plugin
-      uses: actions/upload-release-asset@v1
+    - name: Upload Release Assets
+      id: upload-release-assets
+      uses: dwenegar/upload-release-assets@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./KK_SexFaces.zip
-        asset_name: KK_SexFaces_v${{ github.event.inputs.version }}.zip
-        asset_content_type: application/zip
+        release_id: ${{ steps.create_release.outputs.id }}
+        assets_path: assets
