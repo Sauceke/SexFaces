@@ -3,7 +3,6 @@ using Illusion.Game;
 using KKAPI.Maker;
 using KKAPI.Maker.UI;
 using System;
-using System.Collections;
 using System.Linq;
 using UniRx;
 using UnityEngine;
@@ -68,7 +67,7 @@ namespace SexFaces
                 "Set the facial expression using the sidebar.\n" +
                 "Then use this menu to add it as a sex face.",
                 cat, plugin))
-                .TextColor = Color.magenta;
+                .TextColor = Color.yellow;
             triggerButtons = e.AddControl(
                 new MakerRadioButtons(cat, plugin, "Show during:", TriggerDescriptions));
             experienceButtons = e.AddControl(
@@ -94,6 +93,11 @@ namespace SexFaces
             }
             e.AddControl(new MakerSeparator(cat, plugin));
             e.AddControl(new MakerText("Extra Expression Controls", cat, plugin));
+            e.AddControl(new MakerText(
+                "These are only additional expressions.\n" +
+                "You can also use the sidebar ----->",
+                cat, plugin))
+                .TextColor = Color.yellow;
             e.AddControl(new MakerDropdown("Extra Eyebrow Expressions",
                 ExpressionPresets.EyebrowExpressionNames, cat, 0, plugin))
                 .ValueChanged.Subscribe(Controller.ApplyEyebrowPreset);
