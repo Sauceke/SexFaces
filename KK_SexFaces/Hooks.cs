@@ -18,7 +18,9 @@ namespace SexFaces
 
         public static class FacialExpressionLock
         {
-            private static readonly int[] exemptMouthPatterns = { 21, 22, 23 }; // lick, suck, kiss
+            private static readonly int[] exemptMouthPatterns =
+                { (int)MouthPattern.Eating, (int)MouthPattern.HoldInMouth, (int)MouthPattern.Kiss };
+
             private static readonly HashSet<ChaControl> lockedControls = new HashSet<ChaControl>();
 
             public static void Lock(ChaControl control)

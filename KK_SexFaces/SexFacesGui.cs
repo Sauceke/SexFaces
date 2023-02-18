@@ -3,6 +3,7 @@ using Illusion.Game;
 using KKAPI.Maker;
 using KKAPI.Maker.UI;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UniRx;
 using UnityEngine;
@@ -14,10 +15,13 @@ namespace SexFaces
     internal class SexFacesGui
     {
         public static readonly SexFacesGui Instance = new SexFacesGui();
+
         public static readonly string[] TriggerDescriptions =
             { "Foreplay", "Penetration", "Orgasm" };
+
         public static readonly string[] ExperienceDescriptions =
             { "First Time", "Amateur", "Pro", "Lewd" };
+
         private static readonly ColorBlock selectedButtonColors = new ColorBlock
         {
             normalColor = Color.yellow,
@@ -48,7 +52,8 @@ namespace SexFaces
 
         private int selectedFaceSlot = -1;
 
-        private SexFacesGui() { }
+        private SexFacesGui()
+        { }
 
         public void Init(SexFacesPlugin plugin)
         {
@@ -92,38 +97,43 @@ namespace SexFaces
                 faceButtons[i].OnClick.AddListener(new UnityAction(onClickActions[i]));
             }
             e.AddControl(new MakerSeparator(cat, plugin));
-            e.AddControl(new MakerText("Extra Expression Controls", cat, plugin));
-            e.AddControl(new MakerText(
-                "These are only additional expressions.\n" +
-                "You can also use the sidebar ----->",
-                cat, plugin))
-                .TextColor = Color.yellow;
-            e.AddControl(new MakerDropdown("Extra Eyebrow Expressions",
-                ExpressionPresets.EyebrowExpressionNames, cat, 0, plugin))
-                .ValueChanged.Subscribe(Controller.ApplyEyebrowPreset);
-            e.AddControl(new MakerDropdown("Extra Eye Expressions",
-                ExpressionPresets.EyeExpressionNames, cat, 0, plugin))
-                .ValueChanged.Subscribe(Controller.ApplyEyePreset);
-            e.AddControl(new MakerDropdown("Extra Mouth Expressions",
-                ExpressionPresets.MouthExpressionNames, cat, 0, plugin))
-                .ValueChanged.Subscribe(Controller.ApplyMouthPreset);
-            e.AddControl(new MakerSlider(cat, "Eyebrow Limit", 0, 1, 1, plugin))
-                .ValueChanged.Subscribe(Controller.ChaControl.ChangeEyebrowOpenMax);
-            e.AddControl(new MakerText(
-                "Sets how much the eyebrows are allowed to move\n" +
-                "when the character blinks.",
-                cat, plugin));
-            e.AddControl(new MakerSlider(cat, "o_O Scale", 0, 1, .5f, plugin))
-                .ValueChanged.Subscribe(Controller.Squint);
-            e.AddControl(new MakerText(
-                "Makes one eye wider than the other.\n" +
-                "For basic eye expressions only (the ones listed\n" +
-                "in the Operation Panel).",
-                cat, plugin));
+            AddPatternMixer(e, cat, "Eyebrow Pattern Mixer",
+                Enum.GetNames(typeof(EyebrowPattern)), Controller.ApplyEyebrowExpression, plugin);
+            AddPatternMixer(e, cat, "Eye Pattern Mixer",
+                Enum.GetNames(typeof(EyePattern)), Controller.ApplyEyeExpression, plugin);
+            AddPatternMixer(e, cat, "Mouth Pattern Mixer",
+                Enum.GetNames(typeof(MouthPattern)), Controller.ApplyMouthExpression, plugin);
+            e.AddControl(new MakerSeparator(cat, plugin));
             e.AddControl(new MakerSlider(cat, "Left Iris Scale", 0, 2, 1, plugin))
                 .ValueChanged.Subscribe(Controller.ChangeLeftIrisScale);
             e.AddControl(new MakerSlider(cat, "Right Iris Scale", 0, 2, 1, plugin))
                 .ValueChanged.Subscribe(Controller.ChangeRightIrisScale);
+        }
+
+        private void AddPatternMixer(RegisterSubCategoriesEvent e, MakerCategory cat,
+            string title, string[] options, Action<Dictionary<int, float>, float> apply,
+            SexFacesPlugin plugin)
+        {
+            e.AddControl(new MakerText(title, cat, plugin));
+            var ptn1 = e.AddControl(new MakerDropdown("Pattern 1", options, cat, 0, plugin));
+            var ptn2 = e.AddControl(new MakerDropdown("Pattern 2", options, cat, 0, plugin));
+            var ratio = e.AddControl(new MakerSlider(cat, "Ratio", 0f, 1f, 0f, plugin));
+            var openness = e.AddControl(new MakerSlider(cat, "Openness", 0f, 1f, 1f, plugin));
+            void onChanged() =>
+                ApplyExpression(ptn1.Value, ptn2.Value, ratio.Value, openness.Value, apply);
+            ptn1.ValueChanged.Subscribe(value => onChanged());
+            ptn2.ValueChanged.Subscribe(value => onChanged());
+            ratio.ValueChanged.Subscribe(value => onChanged());
+            openness.ValueChanged.Subscribe(value => onChanged());
+        }
+
+        private void ApplyExpression(int ptn1, int ptn2, float ratio, float openness,
+            Action<Dictionary<int, float>, float> apply)
+        {
+            var dict = new Dictionary<int, float>();
+            dict[ptn1] = ratio;
+            dict[ptn2] = 1 - ratio;
+            apply(dict, openness);
         }
 
         private void AddCurrentFace()

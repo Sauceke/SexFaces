@@ -6,36 +6,37 @@ namespace SexFaces
 {
     internal static class FBSExtensions
     {
-        public static void PatchPatternForAhegao(this FBSCtrlMouth mouthCtrl, int ptnIndex,
-            int newPtnIndex)
+        public static void AddAhegao(this FBSCtrlMouth mouthCtrl, MouthPattern basePtn,
+            MouthPattern newPtn)
         {
             for (int fbsIndex = 0; fbsIndex < mouthCtrl.FBSTarget.Length; fbsIndex++)
             {
                 var fbs = mouthCtrl.FBSTarget[fbsIndex];
-                if (newPtnIndex >= fbs.PtnSet.Length)
+                if ((int)newPtn >= fbs.PtnSet.Length)
                 {
-                    Array.Resize(ref fbs.PtnSet, newPtnIndex + 1);
+                    Array.Resize(ref fbs.PtnSet, (int)newPtn + 1);
                     for (int i = 0; i < fbs.PtnSet.Length; i++)
                     {
                         fbs.PtnSet[i] = fbs.PtnSet[i] ?? new FBSTargetInfo.CloseOpen();
                     }
                 }
-                // tongue out (24) for the tongue controller (4), leave everything else as is
-                int ptn = fbsIndex == 4 ? fbs.PtnSet[24].Open : fbs.PtnSet[ptnIndex].Open;
-                fbs.PtnSet[newPtnIndex].Open = ptn;
-                fbs.PtnSet[newPtnIndex].Close = ptn;
+                int ptn = fbsIndex == (int)FBSIndex.Tongue
+                    ? fbs.PtnSet[(int)MouthPattern.TongueOut].Open
+                    : fbs.PtnSet[(int)basePtn].Open;
+                fbs.PtnSet[(int)newPtn].Open = ptn;
+                fbs.PtnSet[(int)newPtn].Close = ptn;
             }
         }
 
-        public static void PatchPatternForLopsided(this FBSCtrlMouth mouthCtrl, int ptnIndex,
-            bool leanRight, int newPtnIndex)
+        public static void AddLopsided(this FBSCtrlMouth mouthCtrl, MouthPattern basePtn,
+            bool leanRight, MouthPattern newPtn)
         {
             for (int fbsIndex = 0; fbsIndex < mouthCtrl.FBSTarget.Length; fbsIndex++)
             {
                 var fbs = mouthCtrl.FBSTarget[fbsIndex];
-                if (newPtnIndex >= fbs.PtnSet.Length)
+                if ((int)newPtn >= fbs.PtnSet.Length)
                 {
-                    Array.Resize(ref fbs.PtnSet, newPtnIndex + 1);
+                    Array.Resize(ref fbs.PtnSet, (int)newPtn + 1);
                     for (int i = 0; i < fbs.PtnSet.Length; i++)
                     {
                         fbs.PtnSet[i] = fbs.PtnSet[i] ?? new FBSTargetInfo.CloseOpen();
@@ -49,8 +50,8 @@ namespace SexFaces
                 var deltaNorms = new Vector3[vertCount];
                 var deltaTans = new Vector3[vertCount];
                 float halfWidth = mesh.vertices.Max(_ => _.x);
-                int openPtn = fbs.PtnSet[ptnIndex].Open;
-                int closedPtn = fbs.PtnSet[ptnIndex].Close;
+                int openPtn = fbs.PtnSet[(int)basePtn].Open;
+                int closedPtn = fbs.PtnSet[(int)basePtn].Close;
                 mesh.GetBlendShapeFrameVertices(openPtn, 0, deltaVertsOpen, deltaNorms, deltaTans);
                 mesh.GetBlendShapeFrameVertices(closedPtn, 0, deltaVertsClosed, deltaNorms,
                     deltaTans);
@@ -66,8 +67,11 @@ namespace SexFaces
                     deltaVertsLopsided[i] = deltaVertsClosed[i] * blend
                         + deltaVertsOpen[i] * (1f - blend);
                 }
+                deltaVertsLopsided = fbsIndex == (int)FBSIndex.Face
+                    ? deltaVertsLopsided
+                    : deltaVertsOpen;
                 string name = "sexfaces.lopsided." + (leanRight ? "right." : "left.")
-                    + mesh.GetBlendShapeName(fbs.PtnSet[ptnIndex].Close);
+                    + mesh.GetBlendShapeName(fbs.PtnSet[(int)basePtn].Close);
                 try
                 {
                     mesh.AddBlendShapeFrame(name, 1f, deltaVertsLopsided, deltaNorms, deltaTans);
@@ -77,8 +81,8 @@ namespace SexFaces
                     // not noteworthy, just means we have already patched this pattern
                 }
                 int index = mesh.GetBlendShapeIndex(name);
-                fbs.PtnSet[newPtnIndex].Open = index;
-                fbs.PtnSet[newPtnIndex].Close = fbs.PtnSet[ptnIndex].Close;
+                fbs.PtnSet[(int)newPtn].Open = index;
+                fbs.PtnSet[(int)newPtn].Close = fbs.PtnSet[(int)basePtn].Close;
                 // this looks stupid but we need to tell unity the mesh was modified
                 meshCtrl.sharedMesh = meshCtrl.sharedMesh;
             }

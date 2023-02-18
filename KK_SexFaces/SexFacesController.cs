@@ -44,15 +44,18 @@ namespace SexFaces
         {
             // TODO: why the fuck does this not work immediately
             yield return new WaitForSecondsRealtime(1);
-            ChaControl.mouthCtrl.PatchPatternForAhegao(2, newPtnIndex: 43);
-            ChaControl.mouthCtrl.PatchPatternForAhegao(11, newPtnIndex: 44);
-            ChaControl.mouthCtrl.PatchPatternForAhegao(39, newPtnIndex: 45);
-            ChaControl.mouthCtrl.PatchPatternForLopsided(12, leanRight: false, newPtnIndex: 46);
-            ChaControl.mouthCtrl.PatchPatternForLopsided(12, leanRight: true, newPtnIndex: 47);
-            ChaControl.mouthCtrl.PatchPatternForLopsided(27, leanRight: false, newPtnIndex: 48);
-            ChaControl.mouthCtrl.PatchPatternForLopsided(27, leanRight: true, newPtnIndex: 49);
-            ChaControl.mouthCtrl.PatchPatternForLopsided(28, leanRight: false, newPtnIndex: 50);
-            ChaControl.mouthCtrl.PatchPatternForLopsided(28, leanRight: true, newPtnIndex: 51);
+            var mouth = ChaControl.mouthCtrl;
+            mouth.AddAhegao(MouthPattern.HappyBroad, MouthPattern.Ahegao1);
+            mouth.AddAhegao(MouthPattern.Serious2, MouthPattern.Ahegao2);
+            mouth.AddAhegao(MouthPattern.CartoonySmile, MouthPattern.Ahegao3);
+            mouth.AddLopsided(MouthPattern.Hate, leanRight: false, MouthPattern.SneerL);
+            mouth.AddLopsided(MouthPattern.Hate, leanRight: true, MouthPattern.SneerR);
+            mouth.AddLopsided(MouthPattern.SmallI, leanRight: false, MouthPattern.Smirk1L);
+            mouth.AddLopsided(MouthPattern.SmallI, leanRight: true, MouthPattern.Smirk1R);
+            mouth.AddLopsided(MouthPattern.BigI, leanRight: false, MouthPattern.Smirk2L);
+            mouth.AddLopsided(MouthPattern.BigI, leanRight: true, MouthPattern.Smirk2R);
+            mouth.AddLopsided(MouthPattern.Smug, leanRight: false, MouthPattern.LopsidedL);
+            mouth.AddLopsided(MouthPattern.Smug, leanRight: true, MouthPattern.LopsidedR);
         }
 
         private void OnForeplay(SaveData.Heroine.HExperienceKind experience)
@@ -65,7 +68,8 @@ namespace SexFaces
             OnForeplay(experience);
         }
 
-        private void OnKiss(SaveData.Heroine.HExperienceKind experience) { }
+        private void OnKiss(SaveData.Heroine.HExperienceKind experience)
+        { }
 
         private void OnInsert(SaveData.Heroine.HExperienceKind experience)
         {
@@ -211,19 +215,22 @@ namespace SexFaces
             ChangeRightIrisScale(1f);
         }
 
-        internal void ApplyEyebrowPreset(int index)
+        internal void ApplyEyebrowExpression(Dictionary<int, float> expression, float openness)
         {
-            ChaControl.eyebrowCtrl.ChangeFace(ExpressionPresets.GetEyebrowExpression(index), false);
+            ChaControl.eyebrowCtrl.ChangeFace(expression, false);
+            ChaControl.ChangeEyebrowOpenMax(openness);
         }
 
-        internal void ApplyEyePreset(int index)
+        internal void ApplyEyeExpression(Dictionary<int, float> expression, float openness)
         {
-            ChaControl.eyesCtrl.ChangeFace(ExpressionPresets.GetEyeExpression(index), false);
+            ChaControl.eyesCtrl.ChangeFace(expression, false);
+            ChaControl.ChangeEyesOpenMax(openness);
         }
 
-        internal void ApplyMouthPreset(int index)
+        internal void ApplyMouthExpression(Dictionary<int, float> expression, float openness)
         {
-            ChaControl.mouthCtrl.ChangeFace(ExpressionPresets.GetMouthExpression(index), false);
+            ChaControl.mouthCtrl.ChangeFace(expression, false);
+            ChaControl.ChangeMouthOpenMax(openness);
         }
 
         internal void AddCurrentFace(Trigger trigger, SaveData.Heroine.HExperienceKind experience)

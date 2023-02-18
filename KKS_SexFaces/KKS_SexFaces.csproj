@@ -53,8 +53,8 @@
     <Compile Include="..\KK_SexFaces\ConfigurationManagerAttributes.cs">
       <Link>ConfigurationManagerAttributes.cs</Link>
     </Compile>
-    <Compile Include="..\KK_SexFaces\ExpressionPresets.cs">
-      <Link>ExpressionPresets.cs</Link>
+    <Compile Include="..\KK_SexFaces\Constants.cs">
+      <Link>Constants.cs</Link>
     </Compile>
     <Compile Include="..\KK_SexFaces\FacialExpression.cs">
       <Link>FacialExpression.cs</Link>

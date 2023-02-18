@@ -46,7 +46,7 @@
   <ItemGroup>
     <Compile Include="CharaExtensions.cs" />
     <Compile Include="ConfigurationManagerAttributes.cs" />
-    <Compile Include="ExpressionPresets.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="FacialExpression.cs" />
     <Compile Include="FacialExpressionSerde.cs" />
     <Compile Include="GameController.cs" />
