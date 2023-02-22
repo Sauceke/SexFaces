@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using HarmonyLib;
+using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using UnityEngine;
 
 namespace SexFaces
@@ -89,25 +89,16 @@ namespace SexFaces
             return (setTarget - actualTarget).magnitude == 0;
         }
 
-        private static Dictionary<int, float> GetExpression(FBSBase fbs)
-        {
-            return (Dictionary<int, float>)typeof(FBSBase)
-                .GetField("dictNowFace", BindingFlags.NonPublic | BindingFlags.Instance)
-                .GetValue(fbs);
-        }
+        private static Dictionary<int, float> GetExpression(FBSBase fbs) =>
+            Traverse.Create(fbs).Field<Dictionary<int, float>>("dictNowFace").Value;
 
-        private static string DictToString(Dictionary<int, float> dict)
-        {
-            return dict
-                .Select(pair => pair.Key + ":" + pair.Value)
-                .Aggregate("", (a, b) => a + ";" + b);
-        }
+        private static string DictToString(Dictionary<int, float> dict) => dict
+            .Select(pair => pair.Key + ":" + pair.Value)
+            .Aggregate("", (a, b) => a + ";" + b);
 
-        private static Dictionary<int, float> StringToDict(string s)
-        {
-            return s.Split(';').Skip(1)
-                .ToDictionary(pair => int.Parse(pair.Split(':')[0]),
+        private static Dictionary<int, float> StringToDict(string s) =>
+            s.Split(';').Skip(1).ToDictionary(
+                pair => int.Parse(pair.Split(':')[0]),
                 pair => float.Parse(pair.Split(':')[1]));
-        }
     }
 }
