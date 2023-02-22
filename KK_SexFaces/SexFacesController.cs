@@ -54,32 +54,22 @@ namespace SexFaces
             mouth.AddLopsided(MouthPattern.SmallI, leanRight: true, MouthPattern.Smirk1R);
             mouth.AddLopsided(MouthPattern.BigI, leanRight: false, MouthPattern.Smirk2L);
             mouth.AddLopsided(MouthPattern.BigI, leanRight: true, MouthPattern.Smirk2R);
-            mouth.AddLopsided(MouthPattern.Smug, leanRight: false, MouthPattern.LopsidedL);
-            mouth.AddLopsided(MouthPattern.Smug, leanRight: true, MouthPattern.LopsidedR);
         }
 
-        private void OnForeplay(SaveData.Heroine.HExperienceKind experience)
-        {
+        private void OnForeplay(SaveData.Heroine.HExperienceKind experience) =>
             ApplyRandomSexFace(Trigger.OnForeplay, experience);
-        }
 
-        private void OnService(SaveData.Heroine.HExperienceKind experience)
-        {
+        private void OnService(SaveData.Heroine.HExperienceKind experience) =>
             OnForeplay(experience);
-        }
 
         private void OnKiss(SaveData.Heroine.HExperienceKind experience)
         { }
 
-        private void OnInsert(SaveData.Heroine.HExperienceKind experience)
-        {
+        private void OnInsert(SaveData.Heroine.HExperienceKind experience) =>
             ApplyRandomSexFace(Trigger.OnInsert, experience);
-        }
 
-        private void OnOrgasm(SaveData.Heroine.HExperienceKind experience)
-        {
+        private void OnOrgasm(SaveData.Heroine.HExperienceKind experience) =>
             ApplyRandomSexFace(Trigger.OnOrgasm, experience);
-        }
 
         internal void RunLoop(HFlag flags, SaveData.Heroine.HExperienceKind experience,
             HandCtrl hand)
@@ -175,30 +165,11 @@ namespace SexFaces
             }
         }
 
-        internal void Squint(float squintingFactor)
-        {
-            // The "correct" formula would be to multiply this by 2, but the upper 50% isn't that
-            // interesting anyway (it's basically a wink at that point)
-            var winkWeight = Math.Abs(squintingFactor - .5f);
-            var newExpression = new Dictionary<int, float>
-                {
-                    // 5 = left wink
-                    // 6 = right wink
-                    { squintingFactor < .5f ? 5 : 6,  winkWeight},
-                    { ChaControl.GetEyesPtn(), 1 - winkWeight}
-                };
-            ChaControl.eyesCtrl.ChangeFace(newExpression, true);
-        }
-
-        internal void ChangeLeftIrisScale(float scale)
-        {
+        internal void ChangeLeftIrisScale(float scale) =>
             ChangeIrisScale(0, scale);
-        }
 
-        internal void ChangeRightIrisScale(float scale)
-        {
+        internal void ChangeRightIrisScale(float scale) =>
             ChangeIrisScale(1, scale);
-        }
 
         private void ChangeIrisScale(int index, float scale)
         {
@@ -327,8 +298,8 @@ namespace SexFaces
             }
         }
 
-        private static string GetSexFaceId(SexFaceEntry faceEntry)
-            => $"sexFace({faceEntry.Trigger},{(int)faceEntry.Experience},{faceEntry.Slot})";
+        private static string GetSexFaceId(SexFaceEntry faceEntry) =>
+            $"sexFace({faceEntry.Trigger},{(int)faceEntry.Experience},{faceEntry.Slot})";
 
         private static void ParseSexFaceId(int version, string id, out Trigger trigger,
             out SaveData.Heroine.HExperienceKind experience, out int slot)

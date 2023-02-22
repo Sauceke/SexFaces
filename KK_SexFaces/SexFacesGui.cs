@@ -96,7 +96,6 @@ namespace SexFaces
             {
                 faceButtons[i].OnClick.AddListener(new UnityAction(onClickActions[i]));
             }
-            e.AddControl(new MakerSeparator(cat, plugin));
             AddPatternMixer(e, cat, "Eyebrow Pattern Mixer",
                 Enum.GetNames(typeof(EyebrowPattern)), Controller.ApplyEyebrowExpression, plugin);
             AddPatternMixer(e, cat, "Eye Pattern Mixer",
@@ -104,9 +103,9 @@ namespace SexFaces
             AddPatternMixer(e, cat, "Mouth Pattern Mixer",
                 Enum.GetNames(typeof(MouthPattern)), Controller.ApplyMouthExpression, plugin);
             e.AddControl(new MakerSeparator(cat, plugin));
-            e.AddControl(new MakerSlider(cat, "Left Iris Scale", 0, 2, 1, plugin))
+            e.AddControl(new MakerSlider(cat, "Left Iris Scale", 0f, 2f, 1f, plugin))
                 .ValueChanged.Subscribe(Controller.ChangeLeftIrisScale);
-            e.AddControl(new MakerSlider(cat, "Right Iris Scale", 0, 2, 1, plugin))
+            e.AddControl(new MakerSlider(cat, "Right Iris Scale", 0f, 2f, 1f, plugin))
                 .ValueChanged.Subscribe(Controller.ChangeRightIrisScale);
         }
 
@@ -114,6 +113,7 @@ namespace SexFaces
             string title, string[] options, Action<Dictionary<int, float>, float> apply,
             SexFacesPlugin plugin)
         {
+            e.AddControl(new MakerSeparator(cat, plugin));
             e.AddControl(new MakerText(title, cat, plugin));
             var ptn1 = e.AddControl(new MakerDropdown("Pattern 1", options, cat, 0, plugin));
             var ptn2 = e.AddControl(new MakerDropdown("Pattern 2", options, cat, 0, plugin));
@@ -131,8 +131,8 @@ namespace SexFaces
             Action<Dictionary<int, float>, float> apply)
         {
             var dict = new Dictionary<int, float>();
-            dict[ptn1] = ratio;
-            dict[ptn2] = 1 - ratio;
+            dict[ptn1] = 1f - ratio;
+            dict[ptn2] = ratio;
             apply(dict, openness);
         }
 
@@ -174,9 +174,9 @@ namespace SexFaces
         private void OnFaceButtonClicked(int index)
         {
             Controller.PreviewSexFace(
-                    (SexFacesController.Trigger)triggerButtons.Value,
-                    (SaveData.Heroine.HExperienceKind)experienceButtons.Value,
-                    slot: index);
+                (SexFacesController.Trigger)triggerButtons.Value,
+                (SaveData.Heroine.HExperienceKind)experienceButtons.Value,
+                slot: index);
             ResetFaceButtonColors();
             faceButtons[index].ControlObject.GetComponentInChildren<Button>().colors
                 = selectedButtonColors;
@@ -197,9 +197,9 @@ namespace SexFaces
         {
             Utils.Sound.Play(SystemSE.window_o);
             CheckWindow.Setup(CustomCheckWindow.CheckType.YesNo,
-                    "Mouth must be open for lip sync. Make it open?",
-                    strSubMsg: null, strInput: null,
-                    onYes, onNo);
+                "Mouth must be open for lip sync. Make it open?",
+                strSubMsg: null, strInput: null,
+                onYes, onNo);
         }
 
         private void ConfirmDeleteFace()
@@ -212,16 +212,16 @@ namespace SexFaces
             }
             Utils.Sound.Play(SystemSE.window_o);
             CheckWindow.Setup(CustomCheckWindow.CheckType.YesNo,
-                    $"Delete face #{selectedFaceSlot + 1}?",
-                    strSubMsg: null, strInput: null,
-                    _ => DeleteFace(), _ => { });
+                $"Delete face #{selectedFaceSlot + 1}?",
+                strSubMsg: null, strInput: null,
+                _ => DeleteFace(), _ => { });
         }
 
         private void DeleteFace()
         {
             Controller.DeleteFace((SexFacesController.Trigger)triggerButtons.Value,
-                    (SaveData.Heroine.HExperienceKind)experienceButtons.Value,
-                    selectedFaceSlot);
+                (SaveData.Heroine.HExperienceKind)experienceButtons.Value,
+                selectedFaceSlot);
             RefreshFaceList();
         }
     }

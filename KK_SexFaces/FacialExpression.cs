@@ -70,10 +70,9 @@ namespace SexFaces
             if (EyesTargetPos != null)
             {
                 chaControl.objEyesLookTargetP.transform.localRotation = EyesTargetRot.Value;
-                GameObject eyesTarget = new GameObject();
-                eyesTarget.transform.SetParent(chaControl.objEyesLookTargetP.transform);
-                eyesTarget.transform.localPosition = EyesTargetPos.Value;
-                chaControl.ChangeLookEyesTarget(0, eyesTarget.transform);
+                var target = chaControl.objEyesLookTarget;
+                target.transform.localPosition = EyesTargetPos.Value;
+                chaControl.ChangeLookEyesTarget(0, target.transform);
             }
             else
             {
