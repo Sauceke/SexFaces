@@ -254,19 +254,15 @@ namespace SexFaces
         }
 
         internal int GetSlotCount(Trigger trigger, SaveData.Heroine.HExperienceKind experience) =>
-            sexFaces
-                .Where(sf => sf.Trigger == trigger && sf.Experience == experience)
-                .Count();
+            sexFaces.Count(sf => sf.Trigger == trigger && sf.Experience == experience);
 
         internal void PreviewSexFace(Trigger trigger, SaveData.Heroine.HExperienceKind experience,
             int slot)
         {
             Hooks.FacialExpressionLock.Unlock(ChaControl);
             Hooks.EyeDirectionLock.Unlock(ChaControl);
-            var face = sexFaces
-                .Where(sf => sf.Trigger == trigger && sf.Experience == experience
-                    && sf.Slot == slot)
-                .FirstOrDefault();
+            var face = sexFaces.FirstOrDefault(sf =>
+                sf.Trigger == trigger && sf.Experience == experience && sf.Slot == slot);
             if (face == null)
             {
                 Utils.Sound.Play(SystemSE.cancel);
@@ -283,7 +279,7 @@ namespace SexFaces
             Hooks.EyeDirectionLock.Unlock(ChaControl);
             var facePool = sexFaces
                 .Where(sf => sf.Trigger == trigger && sf.Experience == experience);
-            if (facePool.Count() == 0)
+            if (!facePool.Any())
             {
                 ResetIrisScales();
                 return;

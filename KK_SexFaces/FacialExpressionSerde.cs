@@ -7,7 +7,7 @@ namespace SexFaces
     {
         public string Serialize()
         {
-            using (StringWriter writer = new StringWriter())
+            using (var writer = new StringWriter())
             {
                 new XmlSerializer(typeof(FacialExpression)).Serialize(writer, this);
                 return writer.ToString();
@@ -20,7 +20,7 @@ namespace SexFaces
             {
                 return null;
             }
-            using (StringReader reader = new StringReader(blob))
+            using (var reader = new StringReader(blob))
             {
                 return (FacialExpression)new XmlSerializer(typeof(FacialExpression)).Deserialize(reader);
             }

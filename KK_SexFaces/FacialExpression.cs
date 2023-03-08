@@ -84,8 +84,8 @@ namespace SexFaces
 
         private static bool IsLookingAtFixedPosition(ChaControl chaControl)
         {
-            Vector3 setTarget = chaControl.objEyesLookTarget.transform.localPosition;
-            Vector3 actualTarget = chaControl.eyeLookCtrl.target.localPosition;
+            var setTarget = chaControl.objEyesLookTarget.transform.localPosition;
+            var actualTarget = chaControl.eyeLookCtrl.target.localPosition;
             return (setTarget - actualTarget).magnitude == 0;
         }
 

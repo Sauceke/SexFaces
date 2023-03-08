@@ -16,10 +16,10 @@ namespace SexFaces
     {
         public static readonly SexFacesGui Instance = new SexFacesGui();
 
-        public static readonly string[] TriggerDescriptions =
+        private static readonly string[] TriggerDescriptions =
             { "Foreplay", "Penetration", "Orgasm" };
 
-        public static readonly string[] ExperienceDescriptions =
+        private static readonly string[] ExperienceDescriptions =
             { "First Time", "Amateur", "Pro", "Lewd" };
 
         private static readonly ColorBlock selectedButtonColors = new ColorBlock
@@ -89,7 +89,7 @@ namespace SexFaces
                 .Select(i => e.AddControl(new MakerButton($"Face #{i + 1}", cat, plugin)))
                 .ToArray();
             // workaround for a stupid unity bug
-            Action[] onClickActions = faceButtons
+            var onClickActions = faceButtons
                 .Select((btn, i) => (Action)(() => OnFaceButtonClicked(i)))
                 .ToArray();
             for (int i = 0; i < faceButtons.Length; i++)
@@ -119,12 +119,12 @@ namespace SexFaces
             var ptn2 = e.AddControl(new MakerDropdown("Pattern 2", options, cat, 0, plugin));
             var ratio = e.AddControl(new MakerSlider(cat, "Ratio", 0f, 1f, 0f, plugin));
             var openness = e.AddControl(new MakerSlider(cat, "Openness", 0f, 1f, 1f, plugin));
-            void onChanged() =>
+            void OnChanged() =>
                 ApplyExpression(ptn1.Value, ptn2.Value, ratio.Value, openness.Value, apply);
-            ptn1.ValueChanged.Subscribe(value => onChanged());
-            ptn2.ValueChanged.Subscribe(value => onChanged());
-            ratio.ValueChanged.Subscribe(value => onChanged());
-            openness.ValueChanged.Subscribe(value => onChanged());
+            ptn1.ValueChanged.Subscribe(value => OnChanged());
+            ptn2.ValueChanged.Subscribe(value => OnChanged());
+            ratio.ValueChanged.Subscribe(value => OnChanged());
+            openness.ValueChanged.Subscribe(value => OnChanged());
         }
 
         private void ApplyExpression(int ptn1, int ptn2, float ratio, float openness,

@@ -88,9 +88,6 @@ namespace SexFaces
             }
         }
 
-        private static float Sigmoid(float x)
-        {
-            return (float)(Math.Tanh((x - 0.5) * 10) + 1) / 2f;
-        }
+        private static float Sigmoid(float x) => (float)(Math.Tanh((x - 0.5) * 10) + 1) / 2f;
     }
 }

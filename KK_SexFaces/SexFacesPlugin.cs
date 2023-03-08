@@ -13,11 +13,11 @@ namespace SexFaces
     [BepInDependency(KoikatuAPI.GUID, KoikatuAPI.VersionConst)]
     internal class SexFacesPlugin : BaseUnityPlugin
     {
-        public const string GUID = "Sauceke.SexFaces";
+        private const string GUID = "Sauceke.SexFaces";
         private const int switchTimeLowLimit = 1;
         private const int switchTimeHighLimit = 60;
 
-        public static new ManualLogSource Logger;
+        public new static ManualLogSource Logger;
         public static ConfigEntry<int> MinSwitchTimeSecs;
         public static ConfigEntry<int> MaxSwitchTimeSecs;
 
@@ -80,13 +80,13 @@ namespace SexFaces
                     }));
         }
 
-        private void HelpDrawer(ConfigEntryBase obj)
+        private static void HelpDrawer(ConfigEntryBase obj)
         {
             GUILayout.Label("To access the Sex Faces menu, go to Char Maker > ❤ > SexFaces.",
                 GUILayout.ExpandWidth(true));
         }
 
-        private void SwitchTimeRangeDrawer(ConfigEntryBase obj)
+        private static void SwitchTimeRangeDrawer(ConfigEntryBase obj)
         {
             float labelWidth = GUI.skin.label.CalcSize(
                 new GUIContent($"{switchTimeHighLimit} sec")).x;

@@ -23,15 +23,9 @@ namespace SexFaces
 
             private static readonly HashSet<ChaControl> lockedControls = new HashSet<ChaControl>();
 
-            public static void Lock(ChaControl control)
-            {
-                lockedControls.Add(control);
-            }
-
-            public static void Unlock(ChaControl control)
-            {
-                lockedControls.Remove(control);
-            }
+            public static void Lock(ChaControl control) => lockedControls.Add(control);
+            
+            public static void Unlock(ChaControl control) => lockedControls.Remove(control);
 
             [HarmonyPrefix]
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeEyebrowPtn))]
@@ -41,39 +35,27 @@ namespace SexFaces
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeEyesBlinkFlag))]
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeLookEyesPtn))]
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeMouthOpenMax))]
-            private static bool CanChange(ChaControl __instance)
-            {
-                return !lockedControls.Contains(__instance);
-            }
+            private static bool CanChange(ChaControl __instance) =>
+                !lockedControls.Contains(__instance);
 
             [HarmonyPrefix]
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeMouthPtn))]
-            private static bool CanChangeMouth(ChaControl __instance, int ptn)
-            {
-                return exemptMouthPatterns.Contains(ptn) || !lockedControls.Contains(__instance);
-            }
+            private static bool CanChangeMouth(ChaControl __instance, int ptn) =>
+                exemptMouthPatterns.Contains(ptn) || !lockedControls.Contains(__instance);
         }
 
         public static class EyeDirectionLock
         {
             private static readonly HashSet<ChaControl> lockedControls = new HashSet<ChaControl>();
 
-            public static void Lock(ChaControl control)
-            {
-                lockedControls.Add(control);
-            }
+            public static void Lock(ChaControl control) => lockedControls.Add(control);
 
-            public static void Unlock(ChaControl control)
-            {
-                lockedControls.Remove(control);
-            }
+            public static void Unlock(ChaControl control) => lockedControls.Remove(control);
 
             [HarmonyPrefix]
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeLookEyesTarget))]
-            private static bool CanChange(ChaControl __instance)
-            {
-                return !lockedControls.Contains(__instance);
-            }
+            private static bool CanChange(ChaControl __instance) =>
+                !lockedControls.Contains(__instance);
         }
     }
 }
