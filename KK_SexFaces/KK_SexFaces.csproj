@@ -1,101 +1,20 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{BA2BF218-CC71-49FC-977A-ABB64FB726F6}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SexFaces</RootNamespace>
-    <AssemblyName>KK_SexFaces</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>embedded</DebugType>
-    <Optimize>false</Optimize>
+    <TargetFramework>net35</TargetFramework>
+    <AssemblyTitle>KK_SexFaces</AssemblyTitle>
+    <AssemblyVersion>$(Version)</AssemblyVersion>
+    <AssemblyFileVersion>$(Version)</AssemblyFileVersion>
+    <Company>Sauceke</Company>
+    <Product>KK_SexFaces</Product>
+    <Copyright>2020</Copyright>
     <OutputPath>..\bin\SexFaces.KK\BepInEx\plugins\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>embedded</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\bin\SexFaces.KK\BepInEx\plugins\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <DebugSymbols>true</DebugSymbols>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.XML" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="CharaExtensions.cs" />
-    <Compile Include="ConfigurationManagerAttributes.cs" />
-    <Compile Include="Constants.cs" />
-    <Compile Include="FacialExpression.cs" />
-    <Compile Include="FacialExpressionSerde.cs" />
-    <Compile Include="GameController.cs" />
-    <Compile Include="Hooks.cs" />
-    <Compile Include="FBSExtensions.cs" />
-    <Compile Include="RangeSlider.cs" />
-    <Compile Include="SexFacesController.cs" />
-    <Compile Include="SexFacesGui.cs" />
-    <Compile Include="SexFacesPlugin.cs" />
-    <Compile Include="VersionInfo.cs" />
-    <Compile Include="*\*.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="ExtensibleSaveFormat.Koikatu" ExcludeAssets="runtime">
-      <Version>16.9.1</Version>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="IllusionLibs.BepInEx" ExcludeAssets="runtime">
-      <Version>5.4.15</Version>
-    </PackageReference>
-    <PackageReference Include="IllusionLibs.BepInEx.Harmony" ExcludeAssets="runtime">
-      <Version>2.5.4</Version>
-    </PackageReference>
-    <PackageReference Include="IllusionLibs.BepInEx.MonoMod" ExcludeAssets="runtime">
-      <Version>21.8.5.1</Version>
-    </PackageReference>
-    <PackageReference Include="IllusionLibs.Koikatu.Assembly-CSharp">
-      <Version>2019.4.27.4</Version>
-    </PackageReference>
-    <PackageReference Include="IllusionLibs.Koikatu.Assembly-CSharp-firstpass">
-      <Version>2019.4.27.4</Version>
-    </PackageReference>
-    <PackageReference Include="IllusionLibs.Koikatu.UnityEngine">
-      <Version>5.6.2.4</Version>
-    </PackageReference>
-    <PackageReference Include="IllusionLibs.Koikatu.UnityEngine.UI">
-      <Version>5.6.2.4</Version>
-    </PackageReference>
-    <PackageReference Include="IllusionModdingAPI.KKAPI" ExcludeAssets="runtime">
-      <Version>1.31.2</Version>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="KoikatuCompatibilityAnalyzer">
-      <Version>1.0.1</Version>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- taken from https://stackoverflow.com/a/66594320 -->
   <Target Name="EmbedVersion" BeforeTargets="BeforeBuild">
     <PropertyGroup>
       <!-- %3B is semicolon (;)  -->
@@ -112,4 +31,19 @@ namespace AutoVersioning
     </PropertyGroup>
     <WriteLinesToFile File="VersionInfo.cs" Lines="$(_VersionTemplate)" WriteOnlyWhenDifferent="true" Overwrite="true" />
   </Target>
+  <ItemGroup>
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ExtensibleSaveFormat.Koikatu" Version="16.9.1" ExcludeAssets="runtime" PrivateAssets="all" />
+    <PackageReference Include="IllusionLibs.BepInEx" Version="5.4.15" ExcludeAssets="runtime" />
+    <PackageReference Include="IllusionLibs.BepInEx.Harmony" Version="2.5.4" ExcludeAssets="runtime" />
+    <PackageReference Include="IllusionLibs.BepInEx.MonoMod" Version="21.8.5.1" ExcludeAssets="runtime" />
+    <PackageReference Include="IllusionLibs.Koikatu.Assembly-CSharp" Version="2019.4.27.4" ExcludeAssets="runtime" />
+    <PackageReference Include="IllusionLibs.Koikatu.Assembly-CSharp-firstpass" Version="2019.4.27.4" ExcludeAssets="runtime" />
+    <PackageReference Include="IllusionLibs.Koikatu.UnityEngine" Version="5.6.2.4" ExcludeAssets="runtime" />
+    <PackageReference Include="IllusionLibs.Koikatu.UnityEngine.UI" Version="5.6.2.4" />
+    <PackageReference Include="IllusionModdingAPI.KKAPI" Version="1.31.2" ExcludeAssets="runtime" PrivateAssets="all" />
+    <PackageReference Include="KoikatuCompatibilityAnalyzer" Version="1.0.1" PrivateAssets="all" />
+  </ItemGroup>
 </Project>
