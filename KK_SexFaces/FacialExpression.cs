@@ -93,12 +93,13 @@ namespace SexFaces
             Traverse.Create(fbs).Field<Dictionary<int, float>>("dictNowFace").Value;
 
         private static string DictToString(Dictionary<int, float> dict) => dict
-            .Select(pair => pair.Key + ":" + pair.Value)
+            .Select(pair => pair.Key + ":" + pair.Value.ToString("F4"))
             .Aggregate("", (a, b) => a + ";" + b);
 
         private static Dictionary<int, float> StringToDict(string s) =>
             s.Split(';').Skip(1).ToDictionary(
                 pair => int.Parse(pair.Split(':')[0]),
                 pair => float.Parse(pair.Split(':')[1]));
+        
     }
 }
