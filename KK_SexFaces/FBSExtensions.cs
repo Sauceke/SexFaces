@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -9,25 +10,31 @@ namespace SexFaces
         public static void AddAhegao(this FBSCtrlMouth mouthCtrl, MouthPattern basePtn,
             MouthPattern newPtn)
         {
-            for (int fbsIndex = 0; fbsIndex < mouthCtrl.FBSTarget.Length; fbsIndex++)
+            var ptns = new Dictionary<FBSIndex, MouthPattern>()
             {
-                var fbs = mouthCtrl.FBSTarget[fbsIndex];
-                if ((int)newPtn >= fbs.PtnSet.Length)
-                {
-                    Array.Resize(ref fbs.PtnSet, (int)newPtn + 1);
-                    for (int i = 0; i < fbs.PtnSet.Length; i++)
-                    {
-                        fbs.PtnSet[i] = fbs.PtnSet[i] ?? new FBSTargetInfo.CloseOpen();
-                    }
-                }
-                int ptn = fbsIndex == (int)FBSIndex.Tongue
-                    ? fbs.PtnSet[(int)MouthPattern.TongueOut].Open
-                    : fbs.PtnSet[(int)basePtn].Open;
-                fbs.PtnSet[(int)newPtn].Open = ptn;
-                fbs.PtnSet[(int)newPtn].Close = ptn;
-            }
+                { FBSIndex.Face, basePtn },
+                { FBSIndex.Neck, basePtn },
+                { FBSIndex.Teeth, basePtn },
+                { FBSIndex.Eyes, basePtn },
+                { FBSIndex.Tongue, MouthPattern.TongueOut }
+            };
+            AddMixed(mouthCtrl, ptns, keepOpen: true, newPtn);
         }
-
+        
+        public static void AddClosedTeeth(this FBSCtrlMouth mouthCtrl, MouthPattern basePtn,
+            MouthPattern newPtn)
+        {
+            var ptns = new Dictionary<FBSIndex, MouthPattern>()
+            {
+                { FBSIndex.Face, basePtn },
+                { FBSIndex.Neck, basePtn },
+                { FBSIndex.Teeth, MouthPattern.BigI },
+                { FBSIndex.Eyes, basePtn },
+                { FBSIndex.Tongue, basePtn }
+            };
+            AddMixed(mouthCtrl, ptns, keepOpen: false, newPtn);
+        }
+        
         public static void AddLopsided(this FBSCtrlMouth mouthCtrl, MouthPattern basePtn,
             bool leanRight, MouthPattern newPtn)
         {
@@ -88,6 +95,26 @@ namespace SexFaces
             }
         }
 
+        private static void AddMixed(FBSCtrlMouth mouthCtrl,
+            Dictionary<FBSIndex, MouthPattern> ptns, bool keepOpen, MouthPattern newPtn)
+        {
+            for (int fbsIndex = 0; fbsIndex < mouthCtrl.FBSTarget.Length; fbsIndex++)
+            {
+                var fbs = mouthCtrl.FBSTarget[fbsIndex];
+                if ((int)newPtn >= fbs.PtnSet.Length)
+                {
+                    Array.Resize(ref fbs.PtnSet, (int)newPtn + 1);
+                    for (int i = 0; i < fbs.PtnSet.Length; i++)
+                    {
+                        fbs.PtnSet[i] = fbs.PtnSet[i] ?? new FBSTargetInfo.CloseOpen();
+                    }
+                }
+                FBSTargetInfo.CloseOpen closeOpen = fbs.PtnSet[(int)ptns[(FBSIndex)fbsIndex]];
+                fbs.PtnSet[(int)newPtn].Open = closeOpen.Open;
+                fbs.PtnSet[(int)newPtn].Close = keepOpen ? closeOpen.Open : closeOpen.Close;
+            }
+        }
+        
         private static float Sigmoid(float x) => (float)(Math.Tanh((x - 0.5) * 10) + 1) / 2f;
     }
 }

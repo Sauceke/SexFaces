@@ -108,6 +108,8 @@
         Smirk1L,
         Smirk1R,
         Smirk2L,
-        Smirk2R
+        Smirk2R,
+        SmugGrin,
+        CatGrin
     }
 }

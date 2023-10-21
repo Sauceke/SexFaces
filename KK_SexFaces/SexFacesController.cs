@@ -54,6 +54,8 @@ namespace SexFaces
             mouth.AddLopsided(MouthPattern.SmallI, leanRight: true, MouthPattern.Smirk1R);
             mouth.AddLopsided(MouthPattern.BigI, leanRight: false, MouthPattern.Smirk2L);
             mouth.AddLopsided(MouthPattern.BigI, leanRight: true, MouthPattern.Smirk2R);
+            mouth.AddClosedTeeth(MouthPattern.Smug, MouthPattern.SmugGrin);
+            mouth.AddClosedTeeth(MouthPattern.Catlike, MouthPattern.CatGrin);
         }
 
         private void OnForeplay(SaveData.Heroine.HExperienceKind experience) =>
