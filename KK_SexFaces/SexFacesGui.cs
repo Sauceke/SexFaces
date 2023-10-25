@@ -132,7 +132,7 @@ namespace SexFaces
         {
             var dict = new Dictionary<int, float>();
             dict[ptn1] = 1f - ratio;
-            dict[ptn2] = ratio;
+            dict[ptn2] = ptn1 == ptn2 ? 1f : ratio;
             apply(dict, openness);
         }
 
