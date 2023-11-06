@@ -1,6 +1,6 @@
-﻿using HarmonyLib;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using UnityEngine;
 
 namespace SexFaces
@@ -21,6 +21,7 @@ namespace SexFaces
         public float LeftEyeScaleY { get; set; } = 1f;
         public float RightEyeScaleX { get; set; } = 1f;
         public float RightEyeScaleY { get; set; } = 1f;
+        public Quaternion? NeckRot { get; set; }
 
         public static FacialExpression Capture(ChaControl chaControl)
         {
@@ -28,7 +29,7 @@ namespace SexFaces
             var eyeTexH = Mathf.Lerp(1.8f, -0.2f, chaControl.fileFace.pupilHeight);
             var leftEyeMatCtrl = chaControl.eyeLookMatCtrl[0];
             var rightEyeMatCtrl = chaControl.eyeLookMatCtrl[1];
-            var expression = new FacialExpression()
+            var expression = new FacialExpression
             {
                 EyebrowExpression = DictToString(GetExpression(chaControl.eyebrowCtrl)),
                 EyebrowOpenMax = chaControl.GetEyebrowOpenMax(),
@@ -41,7 +42,8 @@ namespace SexFaces
                 LeftEyeScaleX = leftEyeMatCtrl.GetEyeTexScale().x / eyeTexW,
                 LeftEyeScaleY = leftEyeMatCtrl.GetEyeTexScale().y / eyeTexH,
                 RightEyeScaleX = rightEyeMatCtrl.GetEyeTexScale().x / eyeTexW,
-                RightEyeScaleY = rightEyeMatCtrl.GetEyeTexScale().y / eyeTexH
+                RightEyeScaleY = rightEyeMatCtrl.GetEyeTexScale().y / eyeTexH,
+                NeckRot = Hooks.NeckLookCalcHooks.GetNeckRotation(chaControl)
             };
             if (IsLookingAtFixedPosition(chaControl))
             {
@@ -80,6 +82,7 @@ namespace SexFaces
             }
             chaControl.mouthCtrl.ChangeFace(StringToDict(MouthExpression), true);
             chaControl.ChangeMouthOpenMax(MouthOpenMax);
+            Hooks.NeckLookCalcHooks.SetNeckRotation(chaControl, NeckRot ?? Quaternion.identity);
         }
 
         private static bool IsLookingAtFixedPosition(ChaControl chaControl)

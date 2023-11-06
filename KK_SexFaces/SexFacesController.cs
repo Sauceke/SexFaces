@@ -181,11 +181,32 @@ namespace SexFaces
             ChaControl.eyeLookMatCtrl[index].SetEyeTexScaleX(eyeTexW);
             ChaControl.eyeLookMatCtrl[index].SetEyeTexScaleY(eyeTexH);
         }
-
+        
         private void ResetIrisScales()
         {
             ChangeLeftIrisScale(1f);
             ChangeRightIrisScale(1f);
+        }
+        
+        internal void ChangeHeadPitch(float degrees)
+        {
+            var eulerAngles = Hooks.NeckLookCalcHooks.GetNeckRotation(ChaControl).eulerAngles;
+            eulerAngles.x = degrees;
+            Hooks.NeckLookCalcHooks.SetNeckRotation(ChaControl, Quaternion.Euler(eulerAngles));
+        }
+        
+        internal void ChangeHeadYaw(float degrees)
+        {
+            var eulerAngles = Hooks.NeckLookCalcHooks.GetNeckRotation(ChaControl).eulerAngles;
+            eulerAngles.y = degrees;
+            Hooks.NeckLookCalcHooks.SetNeckRotation(ChaControl, Quaternion.Euler(eulerAngles));
+        }
+        
+        internal void ChangeHeadRoll(float degrees)
+        {
+            var eulerAngles = Hooks.NeckLookCalcHooks.GetNeckRotation(ChaControl).eulerAngles;
+            eulerAngles.z = degrees;
+            Hooks.NeckLookCalcHooks.SetNeckRotation(ChaControl, Quaternion.Euler(eulerAngles));
         }
 
         internal void ApplyEyebrowExpression(Dictionary<int, float> expression, float openness)
@@ -284,6 +305,7 @@ namespace SexFaces
             if (!facePool.Any())
             {
                 ResetIrisScales();
+                Hooks.NeckLookCalcHooks.ResetNeckRotation(ChaControl);
                 return;
             }
             var index = random.Next(facePool.Count());
