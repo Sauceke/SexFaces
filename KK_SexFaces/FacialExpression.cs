@@ -82,7 +82,7 @@ namespace SexFaces
             }
             chaControl.mouthCtrl.ChangeFace(StringToDict(MouthExpression), true);
             chaControl.ChangeMouthOpenMax(MouthOpenMax);
-            Hooks.NeckLookCalcHooks.SetNeckRotation(chaControl, NeckRot ?? Quaternion.identity);
+            chaControl.MoveNeck(NeckRot ?? Quaternion.identity);
         }
 
         private static bool IsLookingAtFixedPosition(ChaControl chaControl)
