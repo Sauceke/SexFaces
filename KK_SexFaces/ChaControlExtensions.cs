@@ -5,8 +5,8 @@ namespace SexFaces
 {
     public static class ChaControlExtensions
     {
-        public static void MoveNeck(this ChaControl chaControl, Quaternion end)
-            => chaControl.StartCoroutine(SlerpNeck(chaControl, end));
+        public static void MoveNeck(this ChaControl chaControl, Quaternion end) =>
+            chaControl.StartCoroutine(SlerpNeck(chaControl, end));
 
         private static IEnumerator SlerpNeck(ChaControl chaControl, Quaternion end)
         {

@@ -103,16 +103,19 @@ namespace SexFaces
             AddPatternMixer(e, cat, "Mouth Pattern Mixer",
                 Enum.GetNames(typeof(MouthPattern)), Controller.ApplyMouthExpression, plugin);
             e.AddControl(new MakerSeparator(cat, plugin));
-            e.AddControl(new MakerSlider(cat, "Left Iris Scale", 0f, 2f, 1f, plugin))
-                .ValueChanged.Subscribe(Controller.ChangeLeftIrisScale);
-            e.AddControl(new MakerSlider(cat, "Right Iris Scale", 0f, 2f, 1f, plugin))
-                .ValueChanged.Subscribe(Controller.ChangeRightIrisScale);
+            e.AddControl(new MakerText("Head", cat, plugin));
             e.AddControl(new MakerSlider(cat, "Head Pitch", -45f, 45f, 0f, plugin))
                 .ValueChanged.Subscribe(Controller.ChangeHeadPitch);
             e.AddControl(new MakerSlider(cat, "Head Yaw", -45f, 45f, 0f, plugin))
                 .ValueChanged.Subscribe(Controller.ChangeHeadYaw);
             e.AddControl(new MakerSlider(cat, "Head Roll", -45f, 45f, 0f, plugin))
                 .ValueChanged.Subscribe(Controller.ChangeHeadRoll);
+            e.AddControl(new MakerSeparator(cat, plugin));
+            e.AddControl(new MakerText("Iris", cat, plugin));
+            e.AddControl(new MakerSlider(cat, "Left Iris Scale", 0f, 2f, 1f, plugin))
+                .ValueChanged.Subscribe(Controller.ChangeLeftIrisScale);
+            e.AddControl(new MakerSlider(cat, "Right Iris Scale", 0f, 2f, 1f, plugin))
+                .ValueChanged.Subscribe(Controller.ChangeRightIrisScale);
         }
 
         private void AddPatternMixer(RegisterSubCategoriesEvent e, MakerCategory cat,
