@@ -126,7 +126,8 @@ namespace SexFaces
             {
                 return;
             }
-            var data = GetExtendedData() ?? new PluginData { version = 1 };
+            var data = new PluginData();
+            data.version = 1;
             foreach (var entry in sexFaces)
             {
                 data.data[GetSexFaceId(entry)] = entry.Face.Serialize();
