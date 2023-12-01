@@ -7,7 +7,27 @@ namespace SexFaces
 {
     internal static class FBSExtensions
     {
-        public static void AddAhegao(this FBSCtrlMouth mouthCtrl, MouthPattern basePtn,
+        public static void PatchPatternSet(this FBSCtrlMouth mouth)
+        {
+            if (mouth.FBSTarget[0].PtnSet.Length >= Enum.GetValues(typeof(MouthPattern)).Length)
+            {
+                // already patched, nothing to do
+                return;
+            }
+            mouth.AddAhegao(MouthPattern.HappyBroad, MouthPattern.Ahegao1);
+            mouth.AddAhegao(MouthPattern.Serious2, MouthPattern.Ahegao2);
+            mouth.AddAhegao(MouthPattern.CartoonySmile, MouthPattern.Ahegao3);
+            mouth.AddLopsided(MouthPattern.Hate, leanRight: false, MouthPattern.SneerL);
+            mouth.AddLopsided(MouthPattern.Hate, leanRight: true, MouthPattern.SneerR);
+            mouth.AddLopsided(MouthPattern.SmallI, leanRight: false, MouthPattern.Smirk1L);
+            mouth.AddLopsided(MouthPattern.SmallI, leanRight: true, MouthPattern.Smirk1R);
+            mouth.AddLopsided(MouthPattern.BigI, leanRight: false, MouthPattern.Smirk2L);
+            mouth.AddLopsided(MouthPattern.BigI, leanRight: true, MouthPattern.Smirk2R);
+            mouth.AddClosedTeeth(MouthPattern.Smug, MouthPattern.SmugGrin);
+            mouth.AddClosedTeeth(MouthPattern.Catlike, MouthPattern.CatGrin);
+        }
+
+        private static void AddAhegao(this FBSCtrlMouth mouthCtrl, MouthPattern basePtn,
             MouthPattern newPtn)
         {
             var ptns = new Dictionary<FBSIndex, MouthPattern>()
@@ -20,8 +40,8 @@ namespace SexFaces
             };
             AddMixed(mouthCtrl, ptns, keepOpen: true, newPtn);
         }
-        
-        public static void AddClosedTeeth(this FBSCtrlMouth mouthCtrl, MouthPattern basePtn,
+
+        private static void AddClosedTeeth(this FBSCtrlMouth mouthCtrl, MouthPattern basePtn,
             MouthPattern newPtn)
         {
             var ptns = new Dictionary<FBSIndex, MouthPattern>()
@@ -34,8 +54,8 @@ namespace SexFaces
             };
             AddMixed(mouthCtrl, ptns, keepOpen: false, newPtn);
         }
-        
-        public static void AddLopsided(this FBSCtrlMouth mouthCtrl, MouthPattern basePtn,
+
+        private static void AddLopsided(this FBSCtrlMouth mouthCtrl, MouthPattern basePtn,
             bool leanRight, MouthPattern newPtn)
         {
             for (int fbsIndex = 0; fbsIndex < mouthCtrl.FBSTarget.Length; fbsIndex++)

@@ -44,6 +44,16 @@ namespace SexFaces
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeMouthPtn))]
             private static bool CanChangeMouth(ChaControl __instance, int ptn) =>
                 exemptMouthPatterns.Contains(ptn) || !lockedControls.Contains(__instance);
+            
+            [HarmonyPrefix]
+            [HarmonyPatch(typeof(FBSBase), nameof(FBSBase.ChangeFace))]
+            private static void PatchMouth(FBSBase __instance)
+            {
+                if (__instance is FBSCtrlMouth mouth)
+                {
+                    mouth.PatchPatternSet();
+                }
+            }
         }
 
         public static class EyeDirectionLock

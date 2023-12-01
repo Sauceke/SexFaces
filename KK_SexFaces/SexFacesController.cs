@@ -40,24 +40,6 @@ namespace SexFaces
 
         private System.Random random = new System.Random();
 
-        private IEnumerator PatchFaces()
-        {
-            // TODO: why the fuck does this not work immediately
-            yield return new WaitForSecondsRealtime(1);
-            var mouth = ChaControl.mouthCtrl;
-            mouth.AddAhegao(MouthPattern.HappyBroad, MouthPattern.Ahegao1);
-            mouth.AddAhegao(MouthPattern.Serious2, MouthPattern.Ahegao2);
-            mouth.AddAhegao(MouthPattern.CartoonySmile, MouthPattern.Ahegao3);
-            mouth.AddLopsided(MouthPattern.Hate, leanRight: false, MouthPattern.SneerL);
-            mouth.AddLopsided(MouthPattern.Hate, leanRight: true, MouthPattern.SneerR);
-            mouth.AddLopsided(MouthPattern.SmallI, leanRight: false, MouthPattern.Smirk1L);
-            mouth.AddLopsided(MouthPattern.SmallI, leanRight: true, MouthPattern.Smirk1R);
-            mouth.AddLopsided(MouthPattern.BigI, leanRight: false, MouthPattern.Smirk2L);
-            mouth.AddLopsided(MouthPattern.BigI, leanRight: true, MouthPattern.Smirk2R);
-            mouth.AddClosedTeeth(MouthPattern.Smug, MouthPattern.SmugGrin);
-            mouth.AddClosedTeeth(MouthPattern.Catlike, MouthPattern.CatGrin);
-        }
-
         private void OnForeplay(SaveData.Heroine.HExperienceKind experience) =>
             ApplyRandomSexFace(Trigger.OnForeplay, experience);
 
@@ -141,7 +123,6 @@ namespace SexFaces
             {
                 return;
             }
-            StartCoroutine(PatchFaces());
             if (!MakerAPI.InsideAndLoaded || MakerAPI.GetCharacterLoadFlags().Parameters)
             {
                 sexFaces.Clear();
