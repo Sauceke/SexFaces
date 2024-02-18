@@ -71,12 +71,13 @@ namespace SexFaces
                 }
                 var meshCtrl = fbs.GetSkinnedMeshRenderer();
                 var mesh = meshCtrl.sharedMesh;
-                int vertCount = mesh.vertexCount;
+                var vertices = mesh.vertices;
+                int vertCount = vertices.Length;
                 var deltaVertsOpen = new Vector3[vertCount];
                 var deltaVertsClosed = new Vector3[vertCount];
                 var deltaNorms = new Vector3[vertCount];
                 var deltaTans = new Vector3[vertCount];
-                float halfWidth = mesh.vertices.Max(_ => _.x);
+                float halfWidth = vertices.Max(_ => _.x);
                 int openPtn = fbs.PtnSet[(int)basePtn].Open;
                 int closedPtn = fbs.PtnSet[(int)basePtn].Close;
                 mesh.GetBlendShapeFrameVertices(openPtn, 0, deltaVertsOpen, deltaNorms, deltaTans);
@@ -85,7 +86,7 @@ namespace SexFaces
                 var deltaVertsLopsided = new Vector3[vertCount];
                 for (int i = 0; i < vertCount; i++)
                 {
-                    float relativeX = Mathf.InverseLerp(-halfWidth, halfWidth, mesh.vertices[i].x);
+                    float relativeX = Mathf.InverseLerp(-halfWidth, halfWidth, vertices[i].x);
                     float blend = Sigmoid(relativeX);
                     if (leanRight)
                     {
