@@ -40,67 +40,46 @@ namespace SexFaces
 
         private System.Random random = new System.Random();
 
-        private void OnForeplay(SaveData.Heroine.HExperienceKind experience) =>
-            ApplyRandomSexFace(Trigger.OnForeplay, experience);
-
-        private void OnService(SaveData.Heroine.HExperienceKind experience) =>
-            OnForeplay(experience);
-
-        private void OnKiss(SaveData.Heroine.HExperienceKind experience)
-        { }
-
-        private void OnInsert(SaveData.Heroine.HExperienceKind experience) =>
-            ApplyRandomSexFace(Trigger.OnInsert, experience);
-
-        private void OnOrgasm(SaveData.Heroine.HExperienceKind experience) =>
-            ApplyRandomSexFace(Trigger.OnOrgasm, experience);
-
-        internal void RunLoop(HFlag flags, SaveData.Heroine.HExperienceKind experience,
-            HandCtrl hand)
+        internal void RunLoop(HFlag flags, SaveData.Heroine.HExperienceKind experience)
         {
             StopAllCoroutines();
-            StartCoroutine(Loop(flags, experience, hand));
+            StartCoroutine(Loop(flags, experience));
         }
 
-        private IEnumerator Loop(HFlag flags, SaveData.Heroine.HExperienceKind experience,
-            HandCtrl hand)
+        private IEnumerator Loop(HFlag flags, SaveData.Heroine.HExperienceKind experience)
         {
-            Action<SaveData.Heroine.HExperienceKind> currentState = OnForeplay;
-            OnForeplay(experience);
+            var currentState = Trigger.OnForeplay;
+            ApplyRandomSexFace(currentState, experience);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             var switchTimeSecs = 0;
             while (!flags.isHSceneEnd)
             {
-                var newState = GetSexFaceDisplayAction(flags, hand);
+                yield return new WaitForSecondsRealtime(0.2f);
+                var newState = GetSexFaceTrigger(flags);
                 if (currentState != newState)
                 {
                     currentState = newState;
-                    newState(experience);
+                    ApplyRandomSexFace(currentState, experience);
                 }
                 else if (stopwatch.Elapsed.TotalSeconds > switchTimeSecs)
                 {
-                    currentState(experience);
+                    ApplyRandomSexFace(currentState, experience);
                     switchTimeSecs = random.Next(SexFacesPlugin.MinSwitchTimeSecs.Value,
                         SexFacesPlugin.MaxSwitchTimeSecs.Value);
                     stopwatch.Reset();
                     stopwatch.Start();
                 }
-                yield return new WaitForSecondsRealtime(0.2f);
             }
             Hooks.FacialExpressionLock.Unlock(ChaControl);
             Hooks.EyeDirectionLock.Unlock(ChaControl);
         }
 
-        private Action<SaveData.Heroine.HExperienceKind> GetSexFaceDisplayAction(HFlag flags,
-            HandCtrl hand)
-        {
-            return (hand?.IsKissAction() ?? false) ? OnKiss
-                : houshiModes.Contains(flags.mode) ? OnService
-                : orgAnimations.Contains(flags.nowAnimStateName) ? OnOrgasm
-                : insertAnimations.Contains(flags.nowAnimStateName) ? OnInsert
-                : (Action<SaveData.Heroine.HExperienceKind>)OnForeplay;
-        }
+        private Trigger GetSexFaceTrigger(HFlag flags) =>
+            houshiModes.Contains(flags.mode) ? Trigger.OnForeplay
+                : orgAnimations.Contains(flags.nowAnimStateName) ? Trigger.OnOrgasm
+                : insertAnimations.Contains(flags.nowAnimStateName) ? Trigger.OnInsert
+                : Trigger.OnForeplay;
 
         protected override void OnCardBeingSaved(GameMode currentGameMode)
         {
@@ -283,7 +262,7 @@ namespace SexFaces
             Hooks.EyeDirectionLock.Unlock(ChaControl);
             var facePool = sexFaces
                 .Where(sf => sf.Trigger == trigger && sf.Experience == experience);
-            if (!facePool.Any())
+            if (!facePool.Any() || Hooks.FacialExpressionLock.IsExempt(ChaControl))
             {
                 ResetIrisScales();
                 Hooks.NeckLookCalcHooks.ResetNeckRotation(ChaControl);

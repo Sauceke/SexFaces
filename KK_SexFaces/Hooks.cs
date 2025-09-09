@@ -20,14 +20,32 @@ namespace SexFaces
 
         public static class FacialExpressionLock
         {
-            private static readonly int[] exemptMouthPatterns =
-                { (int)MouthPattern.Eating, (int)MouthPattern.HoldInMouth, (int)MouthPattern.Kiss };
+            private static readonly int[] exemptFaceIds = { 3, 5, 8, 9, 16, 22 };
 
+            private static readonly HashSet<ChaControl> exemptControls = new HashSet<ChaControl>();
             private static readonly HashSet<ChaControl> lockedControls = new HashSet<ChaControl>();
 
             public static void Lock(ChaControl control) => lockedControls.Add(control);
             
             public static void Unlock(ChaControl control) => lockedControls.Remove(control);
+
+            public static bool IsExempt(ChaControl control) => exemptControls.Contains(control);
+
+            [HarmonyPrefix]
+            [HarmonyPatch(typeof(FaceListCtrl), "SetFace")]
+            private static bool CanSetFace(ref bool __result, int _idFace, ChaControl _chara)
+            {
+                var exempt = exemptFaceIds.Contains(_idFace);
+                if (exempt)
+                {
+                    exemptControls.Add(_chara);
+                }
+                else
+                {
+                    exemptControls.Remove(_chara);
+                }
+                return __result = !lockedControls.Contains(_chara) || exempt;
+            }
 
             [HarmonyPrefix]
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeEyebrowPtn))]
@@ -37,14 +55,10 @@ namespace SexFaces
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeEyesBlinkFlag))]
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeLookEyesPtn))]
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeMouthOpenMax))]
-            private static bool CanChange(ChaControl __instance) =>
-                !lockedControls.Contains(__instance);
-
-            [HarmonyPrefix]
             [HarmonyPatch(typeof(ChaControl), nameof(ChaControl.ChangeMouthPtn))]
-            private static bool CanChangeMouth(ChaControl __instance, int ptn) =>
-                exemptMouthPatterns.Contains(ptn) || !lockedControls.Contains(__instance);
-            
+            private static bool CanChange(ChaControl __instance) =>
+                !lockedControls.Contains(__instance) || exemptControls.Contains(__instance);
+
             [HarmonyPrefix]
             [HarmonyPatch(typeof(FBSBase), nameof(FBSBase.ChangeFace))]
             private static void PatchMouth(FBSBase __instance)
